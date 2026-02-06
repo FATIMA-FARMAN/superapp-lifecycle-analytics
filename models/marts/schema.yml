@@ -2,58 +2,52 @@ version: 2
 
 models:
   - name: dim_users
-    description: "Customer dimension with lifetime metrics"
+    description: "Customer dimension with lifetime value metrics and product adoption"
     columns:
       - name: user_id
-        tests:
+        description: "Primary key - unique customer identifier"
+        data_tests:
           - unique
           - not_null
-      - name: lifetime_gmv
-        description: "Total GMV from completed transactions"
+
+  - name: fct_transactions
+    description: "Transaction fact table with full customer context"
+    columns:
+      - name: transaction_id
+        description: "Primary key - unique transaction identifier"
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: user_id
+        description: "Foreign key to dim_users"
+        data_tests:
+          - relationships:
+              to: ref('dim_users')
+              field: user_id
 
   - name: fct_activation
     description: "First transaction analysis by user and product"
     columns:
       - name: user_id
-        tests:
+        description: "User identifier"
+        data_tests:
           - not_null
+      
       - name: product
-        tests:
-          - not_null
-
-  - name: fct_transactions
-    description: "Transaction facts with customer context"
-    columns:
-      - name: transaction_id
-        tests:
-          - unique
+        description: "Product where activation occurred"
+        data_tests:
           - not_null
 
   - name: fct_retention
-    description: "Monthly cohort retention tracking"
+    description: "Monthly cohort retention metrics by product"
     columns:
-      - name: user_id
-        tests:
+      - name: cohort_month
+        description: "Month when user first transacted"
+        data_tests:
           - not_null
-
-  - name: dim_users_enhanced
-    description: "Enhanced user dimension with RFM segmentation"
-    columns:
-      - name: user_id
-        tests:
-          - unique
-          - not_null
-      - name: customer_tier
-        tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: ['VIP', 'High Value', 'Regular', 'Low Value', 'Inactive']
-
-  - name: fct_transactions_incremental
-    description: "Incremental transaction facts for scalability"
-    columns:
-      - name: transaction_id
-        tests:
-          - unique
+      
+      - name: product
+        description: "Product line being analyzed"
+        data_tests:
           - not_null

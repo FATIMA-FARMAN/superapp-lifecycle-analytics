@@ -2,29 +2,34 @@ version: 2
 
 models:
   - name: int_user_summary
-    description: User-level aggregations
+    description: "Intermediate user-level aggregations"
     columns:
       - name: user_id
-        tests:
+        description: "Unique user identifier"
+        data_tests:
           - unique
           - not_null
 
   - name: int_transaction_summary
-    description: Transaction metrics by date and product
+    description: "Intermediate transaction aggregations"
     columns:
-      - name: transaction_date
-        tests:
-          - not_null
       - name: product
-        tests:
+        description: "Product identifier"
+        data_tests:
+          - not_null
+      - name: transaction_date
+        description: "Transaction date"
+        data_tests:
           - not_null
 
   - name: int_event_summary
-    description: Event aggregations by user and date
+    description: "Intermediate event aggregations"
     columns:
       - name: user_id
-        tests:
+        description: "User identifier"
+        data_tests:
           - not_null
       - name: event_date
-        tests:
+        description: "Event date"
+        data_tests:
           - not_null
