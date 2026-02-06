@@ -1,8 +1,32 @@
+# dbt artifacts
 target/
 dbt_packages/
 logs/
-.DS_Store
-*.pyc
+*.log
+
+# DuckDB database files
+*.duckdb
+*.duckdb.wal
+
+# Python
 __pycache__/
-.env
-profiles.yml
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.backup
+*.bak
