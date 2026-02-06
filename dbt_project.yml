@@ -28,3 +28,11 @@ models:
     marts:
       +materialized: table
       +schema: marts
+
+# Project hooks
+on-run-start:
+  - "{{ log('🚀 Starting dbt run at ' ~ run_started_at.strftime('%Y-%m-%d %H:%M:%S'), info=True) }}"
+
+on-run-end:
+  - "{{ log('✅ Completed dbt run. Total models: ' ~ results|length, info=True) }}"
+  - "{{ log('📊 Failed tests: ' ~ results | selectattr('status', 'equalto', 'fail') | list | length, info=True) }}"

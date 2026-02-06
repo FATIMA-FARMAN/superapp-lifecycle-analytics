@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: dim_users_enhanced
+    description: "Enhanced user dimension with RFM segmentation"
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: lifetime_gmv
+        tests:
+          - positive_gmv
+      - name: customer_tier
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['VIP', 'High Value', 'Regular', 'Low Value', 'Inactive']
+      - name: recency_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Active', 'At Risk', 'Churned']
+
+  - name: fct_transactions_incremental
+    description: "Incremental transaction facts"
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: transaction_date
+        tests:
+          - data_freshness:
+              arguments:
+                max_days_old: 365
