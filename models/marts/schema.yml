@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: dim_users
+    description: "User dimension with lifetime transaction metrics"
+    columns:
+      - name: user_id
+        description: "Primary key - unique user identifier"
+        tests:
+          - unique
+          - not_null
+      - name: country
+        description: "User's country"
+      - name: user_segment
+        description: "User segment classification"
+      - name: lifetime_gmv
+        description: "Total GMV from completed transactions (null if no completed transactions)"
+      - name: lifetime_transactions
+        description: "Total number of transactions"
+
+  - name: fct_activation
+    description: "First transaction (activation) by user and product"
+    columns:
+      - name: user_id
+        description: "User identifier"
+        tests:
+          - not_null
+      - name: product
+        description: "Product type (BNPL, Food, Ride, etc.)"
+        tests:
+          - not_null
+      - name: activation_date
+        description: "Date of first transaction for this product"
+        tests:
+          - not_null
+      - name: days_to_activate
+        description: "Days between registration and first transaction"
+
+  - name: fct_transactions
+    description: "Transaction-level facts with user context"
+    columns:
+      - name: transaction_id
+        description: "Primary key - unique transaction identifier"
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: "User identifier"
+        tests:
+          - not_null
+      - name: amount
+        description: "Transaction amount"
+        tests:
+          - not_null
+      - name: payment_status
+        description: "Transaction status"
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['success', 'failed']
+
+  - name: fct_retention
+    description: "Monthly cohort retention analysis"
+    columns:
+      - name: user_id
+        description: "User identifier"
+        tests:
+          - not_null
+      - name: product
+        description: "Product type"
+        tests:
+          - not_null
+      - name: cohort_month
+        description: "Month of first activity"
+        tests:
+          - not_null
+      - name: activity_month
+        description: "Month of transaction activity"
+      - name: monthly_gmv
+        description: "Total GMV for the month"
+      - name: months_since_activation
+        description: "Months elapsed since first activity"

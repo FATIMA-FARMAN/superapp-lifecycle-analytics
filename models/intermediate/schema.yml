@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: int_user_summary
+    description: User-level aggregations
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+
+  - name: int_transaction_summary
+    description: Transaction metrics by date and product
+    columns:
+      - name: transaction_date
+        tests:
+          - not_null
+      - name: product
+        tests:
+          - not_null
+
+  - name: int_event_summary
+    description: Event aggregations by user and date
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+      - name: event_date
+        tests:
+          - not_null
