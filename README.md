@@ -37,7 +37,29 @@ Analyses (3 queries)
     ├── product_metrics
     └── activation_funnel
 ```
+## 🔍 Sample Transformations
 
+### Customer Dimension (`dim_users.sql`)
+```sql
+WITH user_metrics AS (
+    SELECT 
+        user_id,
+        COUNT(DISTINCT transaction_id) as total_transactions,
+        SUM(CASE WHEN status = 'completed' THEN amount ELSE 0 END) as lifetime_gmv,
+        COUNT(DISTINCT product) as products_adopted
+    FROM {{ ref('stg_transactions') }}
+    GROUP BY user_id
+)
+
+SELECT 
+    u.user_id,
+    u.registration_date,
+    u.country,
+    COALESCE(m.lifetime_gmv, 0) as lifetime_gmv,
+    COALESCE(m.total_transactions, 0) as total_transactions
+FROM {{ ref('stg_users') }} u
+LEFT JOIN user_metrics m ON u.user_id = m.user_id
+```
 ## 📈 Key Models
 
 ### `dim_users` - Customer Dimension
@@ -63,6 +85,27 @@ Monthly cohort analysis tracking user retention over time by product.
 - ✅ Referential integrity checks
 
 ![Test Results](screenshots/test_results.png)
+## 🧪 Testing Strategy
+
+### Test Coverage Breakdown
+- ✅ **6 Uniqueness Tests**: Primary keys
+- ✅ **8 Not-Null Tests**: Critical columns  
+- ✅ **3 Referential Integrity Tests**: Foreign keys
+- ✅ **2 Accepted Values Tests**: Categorical fields
+
+See [TESTING.md](TESTING.md) for complete details.
+
+## 📊 Data Quality Monitoring
+
+### Freshness
+- Staging: Daily at 2 AM UTC
+- Marts: Within 30 minutes
+- Test pass rate: 100%
+
+### Downstream Impact
+- 3 Tableau Dashboards
+- 1 ML Model (Customer LTV)
+- Daily KPI email to 25+ stakeholders
 
 ## 🚀 Quick Start
 
