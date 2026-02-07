@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "Standardized user master from raw customer data"
+    columns:
+      - name: user_id
+        description: "Unique identifier for each customer"
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: registration_date
+        description: "Date when user signed up for the platform"
+        data_tests:
+          - not_null
+      
+      - name: country
+        description: "User's country of residence"
+        data_tests:
+          - accepted_values:
+              values: ['UAE', 'Saudi Arabia', 'Egypt', 'Kuwait']
+      
+      - name: user_segment
+        description: "Customer segmentation: new, regular, or vip"
+        data_tests:
+          - accepted_values:
+              values: ['new', 'regular', 'vip']
+
+  - name: stg_transactions
+    description: "Standardized transaction records across all products"
+    columns:
+      - name: transaction_id
+        description: "Unique identifier for each transaction"
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: user_id
+        description: "Reference to customer who made the transaction"
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_users')
+              field: user_id
+      
+      - name: product
+        description: "Product line: bnpl, food_delivery, ride_sharing, or gaming"
+        data_tests:
+          - accepted_values:
+              values: ['bnpl', 'food_delivery', 'ride_sharing', 'gaming']
+      
+      - name: amount
+        description: "Transaction amount in local currency"
+        data_tests:
+          - not_null
+      
+      - name: status
+        description: "Transaction status: completed, pending, or failed"
+        data_tests:
+          - accepted_values:
+              values: ['completed', 'pending', 'failed']
+      
+      - name: transaction_date
+        description: "Timestamp when transaction occurred"
+        data_tests:
+          - not_null
+
+  - name: stg_events
+    description: "Standardized user behavior events across the platform"
+    columns:
+      - name: event_id
+        description: "Unique identifier for each event"
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: user_id
+        description: "Reference to user who triggered the event"
+        data_tests:
+          - relationships:
+              to: ref('stg_users')
+              field: user_id
+      
+      - name: event_type
+        description: "Type of user action: login, view, click, purchase, logout"
+        data_tests:
+          - accepted_values:
+              values: ['login', 'view', 'click', 'purchase', 'logout']
+      
+      - name: event_timestamp
+        description: "When the event occurred"
+        data_tests:
+          - not_null

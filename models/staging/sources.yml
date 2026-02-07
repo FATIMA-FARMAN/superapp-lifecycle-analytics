@@ -2,52 +2,14 @@ version: 2
 
 sources:
   - name: raw_data
-    description: "Raw data from SuperApp platform"
+    description: "Raw CSV files"
     database: dev
     schema: main
+    
     tables:
       - name: users
-        description: "Raw user registration data"
-        meta:
-          external_location: "data/raw/users.csv"
-        columns:
-          - name: user_id
-            description: "Unique user identifier"
-          - name: registration_date
-            description: "Date when user registered"
-          - name: country
-            description: "User's country"
-          - name: user_segment
-            description: "User segment classification"
-      
+        identifier: "read_csv_auto('data/raw/users.csv', header=true)"
       - name: transactions
-        description: "Raw transaction data across all products"
-        meta:
-          external_location: "data/raw/transactions.csv"
-        columns:
-          - name: transaction_id
-            description: "Unique transaction identifier"
-          - name: user_id
-            description: "User who made the transaction"
-          - name: product
-            description: "Product line"
-          - name: amount
-            description: "Transaction amount"
-          - name: status
-            description: "Transaction status"
-          - name: transaction_date
-            description: "When transaction occurred"
-      
+        identifier: "read_csv_auto('data/raw/transactions.csv', header=true)"
       - name: events
-        description: "Raw user behavior events"
-        meta:
-          external_location: "data/raw/events.csv"
-        columns:
-          - name: event_id
-            description: "Unique event identifier"
-          - name: user_id
-            description: "User who triggered event"
-          - name: event_type
-            description: "Type of event"
-          - name: event_timestamp
-            description: "When event occurred"
+        identifier: "read_csv_auto('data/raw/events.csv', header=true)"

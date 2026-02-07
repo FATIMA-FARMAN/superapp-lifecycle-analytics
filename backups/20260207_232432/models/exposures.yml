@@ -1,0 +1,35 @@
+version: 2
+
+exposures:
+  - name: retention_dashboard
+    type: dashboard
+    maturity: high
+    description: "Executive dashboard tracking monthly cohort retention"
+    depends_on:
+      - ref('fct_retention')
+      - ref('dim_users')
+    owner:
+      name: Fatima Farman
+      email: fatima@company.com
+
+  - name: activation_funnel
+    type: dashboard
+    maturity: high
+    description: "Conversion funnel from registration to first transaction"
+    depends_on:
+      - ref('fct_activation')
+      - ref('dim_users')
+    owner:
+      name: Fatima Farman
+      email: fatima@company.com
+
+  - name: gmv_analytics
+    type: dashboard
+    maturity: high
+    description: "Daily GMV reporting and forecasting"
+    depends_on:
+      - ref('fct_transactions')
+      - ref('dim_users')
+    owner:
+      name: Fatima Farman
+      email: fatima@company.com

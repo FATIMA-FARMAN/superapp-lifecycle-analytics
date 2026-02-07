@@ -2,34 +2,22 @@
     config(
         materialized='incremental',
         unique_key='transaction_id',
-        on_schema_change='append_new_columns',
-        tags=['fact', 'incremental', 'daily']
+        on_schema_change='fail'
     )
 }}
 
+-- Transaction-level facts with incremental loading
 with transactions as (
     select * from {{ ref('stg_transactions') }}
     
     {% if is_incremental() %}
+    -- Only process new transactions since last run
     where transaction_date > (select max(transaction_date) from {{ this }})
     {% endif %}
 ),
 
 users as (
     select * from {{ ref('stg_users') }}
-),
-
-transaction_sequences as (
-    select
-        transaction_id,
-        user_id,
-        product,
-        transaction_date,
-        row_number() over (
-            partition by user_id, product 
-            order by transaction_date
-        ) as product_transaction_number
-    from transactions
 )
 
 select
@@ -41,12 +29,8 @@ select
     t.product,
     t.amount,
     t.status,
-    
     datediff('day', u.registration_date, t.transaction_date) as user_age_days,
-    ts.product_transaction_number,
-    
+    row_number() over (partition by t.user_id, t.product order by t.transaction_date) as product_transaction_number,
     current_timestamp as _updated_at
-    
 from transactions t
 left join users u on t.user_id = u.user_id
-left join transaction_sequences ts on t.transaction_id = ts.transaction_id
