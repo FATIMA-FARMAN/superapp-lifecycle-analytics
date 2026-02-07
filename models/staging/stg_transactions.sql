@@ -11,12 +11,12 @@ with source as (
 
 renamed as (
     select
-        transaction_id,
-        user_id,
-        cast(transaction_date as date) as transaction_date,
-        product,
-        cast(amount as decimal(10,2)) as amount,
-        status,
+        "Transaction_ID" as transaction_id,
+        "Customer_ID" as user_id,
+        cast("Transaction_Date" as date) as transaction_date,
+        "Product" as product,
+        cast("Amount" as decimal(10,2)) as amount,
+        "Status" as status,
         current_timestamp as _loaded_at
     from source
 )
