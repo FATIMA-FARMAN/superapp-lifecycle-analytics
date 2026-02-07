@@ -1,7 +1,6 @@
 {{
     config(
-        materialized='view',
-        tags=['staging', 'daily']
+        materialized='view'
     )
 }}
 
