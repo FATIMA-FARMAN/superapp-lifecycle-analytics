@@ -1,11 +1,21 @@
-user_id,registration_date,country,user_segment
-USER001,2024-01-15,UAE,new
-USER002,2024-01-16,Saudi Arabia,regular
-USER003,2024-01-17,Egypt,vip
-USER004,2024-01-18,Kuwait,new
-USER005,2024-01-19,UAE,regular
-USER006,2024-01-20,Saudi Arabia,vip
-USER007,2024-01-21,Egypt,new
-USER008,2024-01-22,UAE,regular
-USER009,2024-01-23,Kuwait,vip
-USER010,2024-01-24,Saudi Arabia,new
+user_id,name,age,country,gender
+101,User_101,49,EGY,Female
+102,User_102,32,KSA,Female
+103,User_103,26,UAE,Male
+104,User_104,39,EGY,Male
+105,User_105,21,NGA,Female
+106,User_106,44,PAK,Female
+107,User_107,44,PAK,Female
+108,User_108,36,KSA,Female
+109,User_109,24,UAE,Female
+110,User_110,19,UAE,Male
+111,User_111,31,PAK,Male
+112,User_112,44,NGA,Male
+113,User_113,50,EGY,Male
+114,User_114,24,NGA,Male
+115,User_115,49,NGA,Female
+116,User_116,34,EGY,Male
+117,User_117,23,EGY,Female
+118,User_118,18,EGY,Female
+119,User_119,47,EGY,Female
+120,User_120,28,KSA,Male
