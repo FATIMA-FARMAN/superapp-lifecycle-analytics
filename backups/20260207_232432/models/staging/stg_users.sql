@@ -1,12 +1,11 @@
 {{
     config(
-        materialized='view',
-        tags=['staging', 'daily']
+        materialized='view'
     )
 }}
 
 with source as (
-    select * from {{ source('raw_data', 'users') }}
+    select * from read_csv_auto('data/raw/users.csv', header=true)
 ),
 
 renamed as (

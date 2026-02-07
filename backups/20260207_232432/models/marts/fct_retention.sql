@@ -1,18 +1,13 @@
-{{
-    config(
-        materialized='table',
-        tags=['fact', 'daily']
-    )
-}}
-
+-- Monthly retention cohorts
 with monthly_activity as (
     select
         user_id,
         product,
         date_trunc('month', transaction_date) as activity_month,
-        sum(case when status = 'completed' then amount else 0 end) as monthly_gmv,
-        count(distinct case when status = 'completed' then transaction_id end) as monthly_transactions
+        sum(amount) as monthly_gmv,
+        count(distinct transaction_id) as monthly_transactions
     from {{ ref('stg_transactions') }}
+    where status = 'completed'
     group by user_id, product, date_trunc('month', transaction_date)
 ),
 
@@ -30,14 +25,9 @@ select
     ma.product,
     fa.cohort_month,
     ma.activity_month,
-    
-    coalesce(ma.monthly_gmv, 0) as monthly_gmv,
-    coalesce(ma.monthly_transactions, 0) as monthly_transactions,
-    
-    datediff('month', fa.cohort_month, ma.activity_month) as months_since_activation,
-    
-    current_timestamp as _updated_at
-    
+    ma.monthly_gmv,
+    ma.monthly_transactions,
+    datediff('month', fa.cohort_month, ma.activity_month) as months_since_activation
 from monthly_activity ma
 inner join first_activity fa 
     on ma.user_id = fa.user_id 
