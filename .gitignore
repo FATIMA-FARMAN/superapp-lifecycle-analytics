@@ -30,3 +30,8 @@ Thumbs.db
 # Backup files
 *.backup
 *.bak
+dev.duckdb
+*.backup
+target/
+dbt_packages/
+logs/
