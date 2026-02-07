@@ -11,7 +11,7 @@ with transactions as (
     select * from {{ ref('stg_transactions') }}
     
     {% if is_incremental() %}
-    where transaction_date > (select max(transaction_date) from {{ this }})
+    where transaction_date > (select coalesce(max(transaction_date), '1900-01-01'::date) from {{ this }})
     {% endif %}
 ),
 
