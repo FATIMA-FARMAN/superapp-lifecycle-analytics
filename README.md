@@ -119,6 +119,23 @@ This project directly mirrors the analytics challenges at BNPL and SuperApp comp
 
 ---
 
+## 📊 Dashboard
+
+Interactive analytics dashboard built with React + Recharts.
+
+### Overview
+![Overview](docs/dashboard/overview.png)
+
+### Revenue
+![Revenue](docs/dashboard/revenue.png)
+
+### Retention
+![Retention](docs/dashboard/retention.png)
+
+### Activation
+![Activation](docs/dashboard/activation.png)
+
+---
 ## Quick Start
 ```bash
 # Prerequisites: Python 3.10+, dbt-duckdb
