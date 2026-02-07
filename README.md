@@ -3,224 +3,159 @@
 [![dbt](https://img.shields.io/badge/dbt-FF694B?style=flat&logo=dbt&logoColor=white)](https://www.getdbt.com/)
 [![DuckDB](https://img.shields.io/badge/DuckDB-FFF000?style=flat&logo=duckdb&logoColor=black)](https://duckdb.org/)
 
-> Production-grade analytics platform processing **$68.2M GMV** across **224,614 transactions**
+A production-grade **dbt + DuckDB** analytics engineering project modeling the full customer lifecycle of a MENA-region SuperApp — covering activation, retention, and GMV analytics across multiple product verticals (BNPL, food delivery, ride sharing, gaming).
 
+Built to demonstrate end-to-end analytics engineering capabilities relevant to fintech platforms like Tabby, Tamara, and Careem.
+
+---
+
+## Architecture
+```
+Raw Data (CSV)  →  Staging  →  Intermediate  →  Marts  →  Analyses/Exposures
+     3 sources      3 views     3 views         5 tables    4 analyses
+                                                1 snapshot   3 exposures
+```
+
+**Tech Stack:** dbt 1.11 · DuckDB · SQL · Git
+
+---
+
+## Data Model
+
+### Sources
+| Source | Records | Description |
+|--------|---------|-------------|
+| `users` | 10 | User profiles across UAE, Saudi Arabia, Egypt, Kuwait |
+| `transactions` | 11 | Multi-product transactions (BNPL, food delivery, ride sharing, gaming) |
+| `events` | — | User behavioral events (login, view, click, purchase, logout) |
+
+### Model Layers
+
+**Staging** — Clean, typed, and tested source data
+- `stg_users` · `stg_transactions` · `stg_events`
+
+**Intermediate** — Business logic aggregations
+- `int_user_summary` — Per-user lifetime metrics, product mix, activation status
+- `int_transaction_summary` — Daily/monthly/product-level GMV, success rates
+- `int_event_summary` — User engagement and activity patterns
+
+**Marts** — Business-ready dimensional models
+- `dim_users` — User dimension with lifetime GMV, tenure, customer tier, recency status
+- `fct_transactions` — Transaction fact table enriched with user context and sequence numbers
+- `fct_transactions_incremental` — Incremental materialization pattern for production scalability
+- `fct_activation` — Time-to-activate by user × product, measuring onboarding velocity
+- `fct_retention` — Cohort-based monthly retention with GMV tracking
+
+**Snapshot**
+- `user_segment_snapshot` — SCD Type 2 tracking of user segment and country changes
+
+---
+
+## Key Metrics
+
+| Metric | Value |
+|--------|-------|
+| Avg Lifetime GMV per User | $265.17 |
+| Total Completed GMV | $2,386.50 |
+| BNPL GMV (largest vertical) | $2,000.00 (83.8%) |
+| Markets Covered | 4 (UAE, KSA, Egypt, Kuwait) |
+| Product Verticals | 4 (BNPL, Food Delivery, Ride Sharing, Gaming) |
+
+---
+
+## Testing & Quality
+
+**33 data tests** covering:
+- Primary key uniqueness and not-null constraints
+- Referential integrity (transactions → users, events → users)
+- Accepted values validation on status, product, country, segment, event type
+- All tests passing ✅
+
+---
+
+## Analytics & Exposures
+
+**Analyses** (ad-hoc business queries):
+- `activation_funnel` — Registration-to-first-transaction conversion
+- `cohort_retention_advanced` — Month-over-month cohort retention curves
+- `retention_metrics` — Retention rate calculations by product
+- `product_metrics` — Cross-product performance comparison
+
+**Exposures** (downstream consumers):
+- 📊 Retention Dashboard
+- 📊 Activation Funnel
+- 📊 GMV Analytics
+
+---
+
+## Project Structure
+```
+superapp-lifecycle-analytics/
+├── data/raw/                    # Source CSV files
+├── models/
+│   ├── staging/                 # Source cleaning & typing
+│   ├── intermediate/            # Business logic layer
+│   └── marts/                   # Dimensional models
+├── snapshots/                   # SCD Type 2 tracking
+├── analyses/                    # Ad-hoc analytics queries
+├── macros/                      # Custom dbt macros
+├── tests/                       # Data quality tests
+└── dbt_project.yml
+```
+
+---
+
+## Fintech Relevance
+
+This project directly mirrors the analytics challenges at BNPL and SuperApp companies:
+
+- **Multi-product lifecycle tracking** — Same user across BNPL, payments, delivery
+- **Cohort retention analysis** — Critical for subscription and repeat-purchase models
+- **Activation funnel metrics** — Time-to-first-transaction drives product growth
+- **GMV analytics by vertical** — Revenue attribution across business lines
+- **MENA market segmentation** — Regional user behavior patterns
+- **Incremental materialization** — Production-ready pattern for high-volume transaction data
+- **SCD tracking** — Capturing user segment migrations over time
+
+---
+
+## Quick Start
+```bash
+# Prerequisites: Python 3.10+, dbt-duckdb
+pip install dbt-duckdb
+
+# Clone and run
+git clone https://github.com/FATIMA-FARMAN/superapp-lifecycle-analytics.git
+cd superapp-lifecycle-analytics
+dbt run --full-refresh
+dbt test
+dbt snapshot
+dbt docs generate && dbt docs serve
+```
+
+---
+
+## DAG (Lineage Graph)
 ![Data Lineage](screenshots/lineage_graph.png)
 
-## 📊 Project Overview
+---
 
-Built a comprehensive customer lifecycle analytics system for a multi-product SuperApp (BNPL, Food Delivery, Ride Sharing, Gaming) using modern data stack principles.
 
-### Key Metrics
-- 💰 **$68.2M** Total GMV Processed
-- 📈 **224,614** Transactions Analyzed
-- 👥 Multi-product customer journey tracking
-- 📉 Cohort-based retention analysis
-
-## 🏗️ Architecture
-```
-Raw Data (CSV)
-    ↓
-Staging Layer (3 models)
-    ├── stg_users
-    ├── stg_transactions  
-    └── stg_events
-    ↓
-Marts Layer (4 models)
-    ├── dim_users (customer dimension)
-    ├── fct_activation (first transaction analysis)
-    ├── fct_transactions (transaction facts)
-    └── fct_retention (cohort retention)
-    ↓
-Analyses (3 queries)
-    ├── retention_metrics
-    ├── product_metrics
-    └── activation_funnel
-```
-## 🔍 Sample Transformations
-
-### Customer Dimension (`dim_users.sql`)
-```sql
-WITH user_metrics AS (
-    SELECT 
-        user_id,
-        COUNT(DISTINCT transaction_id) as total_transactions,
-        SUM(CASE WHEN status = 'completed' THEN amount ELSE 0 END) as lifetime_gmv,
-        COUNT(DISTINCT product) as products_adopted
-    FROM {{ ref('stg_transactions') }}
-    GROUP BY user_id
-)
-
-SELECT 
-    u.user_id,
-    u.registration_date,
-    u.country,
-    COALESCE(m.lifetime_gmv, 0) as lifetime_gmv,
-    COALESCE(m.total_transactions, 0) as total_transactions
-FROM {{ ref('stg_users') }} u
-LEFT JOIN user_metrics m ON u.user_id = m.user_id
-```
-## 📈 Key Models
-
-### `dim_users` - Customer Dimension
-Customer master with lifetime value metrics including total GMV, transaction count, and product adoption.
-
-### `fct_activation` - Activation Analysis
-Tracks first transaction by user and product, measuring time-to-activate and activation rates by segment.
-
-### `fct_transactions` - Transaction Facts
-Complete transaction history with customer context, payment status, and transaction sequencing.
-
-### `fct_retention` - Retention Cohorts
-Monthly cohort analysis tracking user retention over time by product.
-
-![Model Details](screenshots/model_details.png)
-
-## 🧪 Data Quality
-
-**19 automated tests** ensuring data integrity:
-- ✅ Primary key uniqueness
-- ✅ Not-null constraints
-- ✅ Accepted values validation
-- ✅ Referential integrity checks
-
-![Test Results](screenshots/test_results.png)
-## 🧪 Testing Strategy
-
-### Test Coverage Breakdown
-- ✅ **6 Uniqueness Tests**: Primary keys
-- ✅ **8 Not-Null Tests**: Critical columns  
-- ✅ **3 Referential Integrity Tests**: Foreign keys
-- ✅ **2 Accepted Values Tests**: Categorical fields
-
-See [TESTING.md](TESTING.md) for complete details.
-
-## 📊 Data Quality Monitoring
-
-### Freshness
-- Staging: Daily at 2 AM UTC
-- Marts: Within 30 minutes
-- Test pass rate: 100%
-
-### Downstream Impact
-- 3 Tableau Dashboards
-- 1 ML Model (Customer LTV)
-- Daily KPI email to 25+ stakeholders
-
-## 🚀 Quick Start
-
-### Prerequisites
-```bash
-pip install dbt-duckdb
-```
-
-### Setup & Run
-```bash
-# Clone repository
-git clone https://github.com/yourusername/superapp-lifecycle-analytics.git
-cd superapp-lifecycle-analytics/dbt_project
-
-# Install dependencies
-dbt deps
-
-# Run pipeline
-dbt run
-
-# Run tests
-dbt test
-
-# Generate documentation
-dbt docs generate
-dbt docs serve
-```
-
-## 📚 Documentation
-
-Full lineage graph, column-level documentation, and metric definitions available via dbt Docs:
-```bash
-dbt docs serve
-# Navigate to http://localhost:8080
-```
-
-## 🛠️ Tech Stack
-
-- **Orchestration**: dbt Core 1.11.2
-- **Database**: DuckDB (embedded analytics)
-- **Version Control**: Git
-- **Documentation**: dbt Docs
-- **Testing**: dbt built-in data quality framework
-
-## 💼 Business Value
-
-✅ **Unified Customer View**: Single source of truth across all product lines  
-✅ **Data Quality Automation**: 19 tests preventing bad data from reaching dashboards  
-✅ **Self-Service Analytics**: Documented models enabling analyst independence  
-✅ **Production-Ready**: Modular architecture supporting 200K+ transactions  
-
-## 📊 Sample Analyses
-
-### Retention Metrics
-```sql
--- Monthly retention rates by cohort
-SELECT 
-    product,
-    cohort_month,
-    months_since_activation,
-    retention_rate
-FROM {{ ref('retention_metrics') }}
-```
-
-### Product Performance
-```sql
--- GMV and transaction metrics by product
-SELECT 
-    product,
-    total_gmv,
-    total_users,
-    gmv_per_user,
-    transactions_per_user
-FROM {{ ref('product_metrics') }}
-```
-
-## 🎯 Use Cases
-
-1. **Activation Analysis**: Identify friction points in user onboarding
-2. **Retention Tracking**: Monitor cohort health and churn patterns
-3. **Cross-Product Usage**: Understand multi-product adoption journeys
-4. **LTV Modeling**: Calculate customer lifetime value by segment
-
-## 📁 Project Structure
-```
-dbt_project/
-├── models/
-│   ├── staging/           # Raw data standardization
-│   │   ├── stg_users.sql
-│   │   ├── stg_transactions.sql
-│   │   └── stg_events.sql
-│   ├── marts/             # Business logic layer
-│   │   ├── dim_users.sql
-│   │   ├── fct_activation.sql
-│   │   ├── fct_transactions.sql
-│   │   └── fct_retention.sql
-│   └── exposures.yml      # Downstream dashboards
-├── analyses/              # Ad-hoc queries
-│   ├── retention_metrics.sql
-│   ├── product_metrics.sql
-│   └── activation_funnel.sql
-├── tests/                 # Custom data tests
-└── dbt_project.yml       # Project configuration
-```
+ Analytics Engineer | People Data Analyst
+- Specializing in fintech analytics, dbt, and cloud data platforms
+- [LinkedIn](https://linkedin.com/in/your-profile) · [GitHub](https://github.com/FATIMA-FARMAN)
 
 ## 👩‍💻 About
 
 **Fatima Farman**  
-Product Analyst | BNPL & Fintech Analytics Specialist
 
+ Analytics Engineer | People Data Analyst
+- Specializing in fintech analytics, dbt, and cloud data platforms
+- [LinkedIn](https://www.linkedin.com/in/fatima-farman-b524a3204/) · [GitHub](https://github.com/FATIMA-FARMAN)
 - 3+ years in consumer fintech & BNPL
 - Expertise: Customer lifecycle analytics, A/B testing, growth optimization
 - Tech: SQL, Python, dbt, BigQuery, Tableau
 
-📧 [Email](mailto:your.email@example.com) | 💼 [LinkedIn](https://linkedin.com/in/yourprofile) | 🌐 [Portfolio](https://yourportfolio.com)
 
 ---
 
