@@ -21,21 +21,21 @@ user_transactions as (
         user_id,
         count(*) as total_transactions,
         count(distinct product) as unique_products_used,
-        sum(case when payment_status = 'success' then 1 else 0 end) as successful_transactions,
-        sum(case when payment_status = 'failed' then 1 else 0 end) as failed_transactions,
-        sum(case when payment_status = 'success' then amount else 0 end) as total_gmv,
-        avg(case when payment_status = 'success' then amount else null end) as avg_transaction_amount,
+        sum(case when status = 'completed' then 1 else 0 end) as successful_transactions,
+        sum(case when status = 'failed' then 1 else 0 end) as failed_transactions,
+        sum(case when status = 'completed' then amount else 0 end) as total_gmv,
+        avg(case when status = 'completed' then amount else null end) as avg_transaction_amount,
         min(transaction_date) as first_transaction_date,
         max(transaction_date) as last_transaction_date,
         
         -- Product-specific metrics
-        sum(case when product = 'bnpl' and payment_status = 'success' then 1 else 0 end) as bnpl_transactions,
-        sum(case when product = 'shopping' and payment_status = 'success' then 1 else 0 end) as shopping_transactions,
-        sum(case when product = 'wallet' and payment_status = 'success' then 1 else 0 end) as wallet_transactions,
+        sum(case when product = 'bnpl' and status = 'completed' then 1 else 0 end) as bnpl_transactions,
+        sum(case when product = 'shopping' and status = 'completed' then 1 else 0 end) as shopping_transactions,
+        sum(case when product = 'wallet' and status = 'completed' then 1 else 0 end) as wallet_transactions,
         
-        sum(case when product = 'bnpl' and payment_status = 'success' then amount else 0 end) as bnpl_gmv,
-        sum(case when product = 'shopping' and payment_status = 'success' then amount else 0 end) as shopping_gmv,
-        sum(case when product = 'wallet' and payment_status = 'success' then amount else 0 end) as wallet_gmv
+        sum(case when product = 'bnpl' and status = 'completed' then amount else 0 end) as bnpl_gmv,
+        sum(case when product = 'shopping' and status = 'completed' then amount else 0 end) as shopping_gmv,
+        sum(case when product = 'wallet' and status = 'completed' then amount else 0 end) as wallet_gmv
         
     from transactions
     group by user_id
@@ -62,8 +62,6 @@ final as (
     select
         u.user_id,
         u.registration_date,
-        u.age,
-        u.gender,
         u.country,
         u.user_segment,
         

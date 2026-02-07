@@ -15,7 +15,7 @@ select
     t.transaction_date,
     t.product,
     t.amount,
-    t.payment_status,
+    t.status,
     datediff('day', u.registration_date, t.transaction_date) as user_age_days,
     row_number() over (partition by t.user_id, t.product order by t.transaction_date) as product_transaction_number
 from transactions t

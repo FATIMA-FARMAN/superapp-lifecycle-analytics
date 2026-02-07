@@ -7,7 +7,7 @@ with monthly_activity as (
         sum(amount) as monthly_gmv,
         count(distinct transaction_id) as monthly_transactions
     from {{ ref('stg_transactions') }}
-    where payment_status = 'success'
+    where status = 'completed'
     group by user_id, product, date_trunc('month', transaction_date)
 ),
 

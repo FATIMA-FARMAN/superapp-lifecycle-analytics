@@ -10,7 +10,7 @@ user_metrics as (
         max(transaction_date) as last_transaction_date,
         count(distinct transaction_id) as lifetime_transactions,
         count(distinct product) as products_used,
-        sum(case when payment_status = 'success' then amount else 0 end) as lifetime_gmv
+        sum(case when status = 'completed' then amount else 0 end) as lifetime_gmv
     from {{ ref('stg_transactions') }}
     group by user_id
 )
@@ -20,8 +20,6 @@ select
     ub.country,
     ub.user_segment,
     ub.registration_date,
-    ub.age,
-    ub.gender,
     um.first_transaction_date,
     um.last_transaction_date,
     um.lifetime_transactions,

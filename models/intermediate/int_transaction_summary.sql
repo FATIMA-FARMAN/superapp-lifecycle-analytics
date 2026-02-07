@@ -18,18 +18,18 @@ daily_metrics as (
         count(distinct user_id) as unique_users,
         
         -- Success metrics
-        sum(case when payment_status = 'success' then 1 else 0 end) as successful_transactions,
-        sum(case when payment_status = 'failed' then 1 else 0 end) as failed_transactions,
+        sum(case when status = 'completed' then 1 else 0 end) as successful_transactions,
+        sum(case when status = 'failed' then 1 else 0 end) as failed_transactions,
         
         -- GMV metrics
-        sum(case when payment_status = 'success' then amount else 0 end) as total_gmv,
-        avg(case when payment_status = 'success' then amount else null end) as avg_transaction_amount,
-        min(case when payment_status = 'success' then amount else null end) as min_transaction_amount,
-        max(case when payment_status = 'success' then amount else null end) as max_transaction_amount,
+        sum(case when status = 'completed' then amount else 0 end) as total_gmv,
+        avg(case when status = 'completed' then amount else null end) as avg_transaction_amount,
+        min(case when status = 'completed' then amount else null end) as min_transaction_amount,
+        max(case when status = 'completed' then amount else null end) as max_transaction_amount,
         
         -- Success rate
         round(
-            100.0 * sum(case when payment_status = 'success' then 1 else 0 end) / count(*),
+            100.0 * sum(case when status = 'completed' then 1 else 0 end) / count(*),
             2
         ) as success_rate_pct
         
@@ -44,10 +44,10 @@ monthly_metrics as (
         
         count(*) as monthly_transactions,
         count(distinct user_id) as monthly_unique_users,
-        sum(case when payment_status = 'success' then amount else 0 end) as monthly_gmv,
+        sum(case when status = 'completed' then amount else 0 end) as monthly_gmv,
         
         round(
-            100.0 * sum(case when payment_status = 'success' then 1 else 0 end) / count(*),
+            100.0 * sum(case when status = 'completed' then 1 else 0 end) / count(*),
             2
         ) as monthly_success_rate_pct
         
@@ -61,12 +61,12 @@ product_totals as (
         
         count(*) as product_total_transactions,
         count(distinct user_id) as product_unique_users,
-        sum(case when payment_status = 'success' then amount else 0 end) as product_total_gmv,
+        sum(case when status = 'completed' then amount else 0 end) as product_total_gmv,
         
-        avg(case when payment_status = 'success' then amount else null end) as product_avg_amount,
+        avg(case when status = 'completed' then amount else null end) as product_avg_amount,
         
         round(
-            100.0 * sum(case when payment_status = 'success' then 1 else 0 end) / count(*),
+            100.0 * sum(case when status = 'completed' then 1 else 0 end) / count(*),
             2
         ) as product_success_rate_pct
         
@@ -81,15 +81,15 @@ overall_metrics as (
         count(distinct user_id) as total_unique_users,
         count(distinct transaction_date) as days_with_transactions,
         
-        sum(case when payment_status = 'success' then amount else 0 end) as total_gmv,
-        avg(case when payment_status = 'success' then amount else null end) as avg_amount,
+        sum(case when status = 'completed' then amount else 0 end) as total_gmv,
+        avg(case when status = 'completed' then amount else null end) as avg_amount,
         
         sum(case when product = 'bnpl' then 1 else 0 end) as bnpl_count,
         sum(case when product = 'shopping' then 1 else 0 end) as shopping_count,
         sum(case when product = 'wallet' then 1 else 0 end) as wallet_count,
         
         round(
-            100.0 * sum(case when payment_status = 'success' then 1 else 0 end) / count(*),
+            100.0 * sum(case when status = 'completed' then 1 else 0 end) / count(*),
             2
         ) as overall_success_rate_pct
         
