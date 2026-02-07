@@ -25,8 +25,8 @@ Raw Data (CSV)  →  Staging  →  Intermediate  →  Marts  →  Analyses/Expos
 ### Sources
 | Source | Records | Description |
 |--------|---------|-------------|
-| `users` | 10 | User profiles across UAE, Saudi Arabia, Egypt, Kuwait |
-| `transactions` | 11 | Multi-product transactions (BNPL, food delivery, ride sharing, gaming) |
+| `users` | 500 | User profiles across UAE, Saudi Arabia, Egypt, Kuwait |
+| `transactions` | 5,738 | Multi-product transactions (BNPL, food delivery, ride sharing, gaming) |
 | `events` | — | User behavioral events (login, view, click, purchase, logout) |
 
 ### Model Layers
@@ -55,9 +55,9 @@ Raw Data (CSV)  →  Staging  →  Intermediate  →  Marts  →  Analyses/Expos
 
 | Metric | Value |
 |--------|-------|
-| Avg Lifetime GMV per User | $265.17 |
-| Total Completed GMV | $2,386.50 |
-| BNPL GMV (largest vertical) | $2,000.00 (83.8%) |
+| Avg Lifetime GMV per User | $1,601.18 |
+| Total Completed GMV | $800,589.66 |
+| BNPL GMV (largest vertical) | $488,360 (61.0%) |
 | Markets Covered | 4 (UAE, KSA, Egypt, Kuwait) |
 | Product Verticals | 4 (BNPL, Food Delivery, Ride Sharing, Gaming) |
 
