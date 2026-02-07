@@ -1,11 +1,11 @@
-transaction_id,user_id,product,amount,status,transaction_date
-TXN001,USER001,bnpl,1500.00,completed,2024-01-20 10:30:00
-TXN002,USER001,food_delivery,85.50,completed,2024-01-25 12:45:00
-TXN003,USER002,ride_sharing,45.00,completed,2024-01-22 08:15:00
-TXN004,USER003,gaming,25.00,completed,2024-01-23 14:20:00
-TXN005,USER004,bnpl,2000.00,pending,2024-01-24 16:30:00
-TXN006,USER005,food_delivery,120.75,completed,2024-01-26 19:00:00
-TXN007,USER006,ride_sharing,60.00,failed,2024-01-27 09:45:00
-TXN008,USER007,bnpl,500.00,completed,2024-01-28 11:20:00
-TXN009,USER008,gaming,15.00,completed,2024-01-29 15:30:00
-TXN010,USER009,food_delivery,95.25,completed,2024-01-30 18:15:00
+Transaction_ID,Customer_ID,Date,Amount,Currency,Status,Payment_Method
+1,101,2024-01-01,120,USD,Completed,Credit Card
+2,102,2024-01-02,540,USD,Completed,PayPal
+3,103,2024-01-03,75,USD,Pending,Bank Transfer
+4,101,2024-01-04,300,EUR,Completed,Credit Card
+5,104,2024-01-05,1500,USD,Completed,PayPal
+6,105,2024-01-06,250,EUR,Failed,Bank Transfer
+7,103,2024-01-07,600,USD,Completed,Credit Card
+8,106,2024-01-08,80,USD,Completed,PayPal
+9,107,2024-01-09,900,EUR,Completed,Bank Transfer
+10,102,2024-01-10,450,USD,Pending,Credit Card
