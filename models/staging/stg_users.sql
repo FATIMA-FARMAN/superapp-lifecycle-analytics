@@ -1,7 +1,6 @@
 {{
     config(
-        materialized='view',
-        tags=['staging', 'daily']
+        materialized='view'
     )
 }}
 
@@ -11,10 +10,10 @@ with source as (
 
 renamed as (
     select
-        "Customer_ID" as user_id,
-        cast("Registration_Date" as date) as registration_date,
-        "Country" as country,
-        "Customer_Segment" as user_segment,
+        user_id,
+        cast(registration_date as date) as registration_date,
+        country,
+        user_segment,
         current_timestamp as _loaded_at
     from source
 )
