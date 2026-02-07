@@ -6,7 +6,7 @@
 }}
 
 with source as (
-    select * from {{ source('raw_data', 'events') }}
+    select * from read_csv_auto('data/raw/events.csv', header=true)
 ),
 
 renamed as (
