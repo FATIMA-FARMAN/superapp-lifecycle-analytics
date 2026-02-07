@@ -13,8 +13,6 @@ select
     user_id,
     user_segment,
     country,
-    age,
-    gender,
     registration_date
 from {{ ref('stg_users') }}
 
