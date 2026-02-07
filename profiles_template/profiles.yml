@@ -1,0 +1,10 @@
+# Copy this file to ~/.dbt/profiles.yml and update as needed
+
+superapp_lifecycle_analytics:
+  outputs:
+    dev:
+      type: duckdb
+      path: dev.duckdb
+      threads: 4
+      
+  target: dev
