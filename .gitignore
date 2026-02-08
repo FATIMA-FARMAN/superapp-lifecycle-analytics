@@ -7,14 +7,13 @@ env/
 venv/
 *.egg-info/
 
-# dbt
+# dbt artifacts
 target/
 dbt_packages/
 logs/
 *.duckdb
 *.duckdb.wal
-dev.duckdb
-superapp_analytics.duckdb
+*.backup
 
 # IDE
 .vscode/
@@ -23,10 +22,6 @@ superapp_analytics.duckdb
 
 # OS
 .DS_Store
-
-# Models (keep the .pkl files but ignore large data)
-# Uncomment if models are too large for GitHub
-# *.pkl
 
 # Data
 data/raw/*.csv
