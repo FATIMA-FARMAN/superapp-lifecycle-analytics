@@ -1,35 +1,42 @@
 version: 2
 
 exposures:
-  - name: retention_dashboard
+  - name: executive_dashboard
     type: dashboard
     maturity: high
-    description: "Executive dashboard tracking monthly cohort retention"
+    url: https://tableau.company.com/dashboards/executive
+    description: Executive KPI dashboard showing GMV, user growth, and retention
+    
     depends_on:
-      - ref('fct_retention')
       - ref('dim_users')
+      - ref('fct_transactions')
+      - ref('fct_retention')
+    
     owner:
-      name: Fatima Farman
-      email: fatima@company.com
+      name: Analytics Team
+      email: analytics@superapp.com
 
-  - name: activation_funnel
+  - name: product_analytics_dashboard
     type: dashboard
-    maturity: high
-    description: "Conversion funnel from registration to first transaction"
+    maturity: medium
+    description: Product-level performance metrics and cross-product adoption
+    
     depends_on:
       - ref('fct_activation')
-      - ref('dim_users')
-    owner:
-      name: Fatima Farman
-      email: fatima@company.com
-
-  - name: gmv_analytics
-    type: dashboard
-    maturity: high
-    description: "Daily GMV reporting and forecasting"
-    depends_on:
       - ref('fct_transactions')
-      - ref('dim_users')
+      
     owner:
-      name: Fatima Farman
-      email: fatima@company.com
+      name: Product Analytics
+      email: product-analytics@superapp.com
+
+  - name: cohort_retention_report
+    type: analysis
+    maturity: high
+    description: Monthly cohort retention analysis for finance and strategy teams
+    
+    depends_on:
+      - ref('fct_retention')
+    
+    owner:
+      name: Finance Analytics
+      email: finance-analytics@superapp.com

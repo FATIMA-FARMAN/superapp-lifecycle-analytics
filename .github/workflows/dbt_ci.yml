@@ -1,0 +1,34 @@
+name: dbt CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  dbt-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dbt
+      run: pip install dbt-duckdb pandas numpy
+    
+    - name: Generate data
+      run: python3 scripts/generate_superapp_data.py
+    
+    - name: Run dbt
+      run: |
+        dbt deps
+        dbt run
+        dbt test
+    
+    - name: Generate docs
+      run: dbt docs generate

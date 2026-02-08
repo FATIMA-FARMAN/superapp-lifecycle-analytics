@@ -2,21 +2,21 @@ version: 2
 
 sources:
   - name: raw_csv
-    description: "Raw CSV files loaded from data/raw directory"
-    meta:
-      external_location: "data/raw/*.csv"
+    description: "Raw CSV files from SuperApp transactions"
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 48, period: hour}
+    loaded_at_field: _loaded_at
+    
     tables:
       - name: users
-        description: "User registration and profile data from users.csv"
-        meta:
-          external_location: "data/raw/users.csv"
-      
+        description: "User registration and profile data"
+        identifier: stg_users
+        
       - name: transactions
-        description: "Transaction records from transactions.csv"
-        meta:
-          external_location: "data/raw/transactions.csv"
-      
+        description: "Transaction records across all products"
+        identifier: stg_transactions
+        
       - name: events
-        description: "User behavioral events from events.csv"
-        meta:
-          external_location: "data/raw/events.csv"
+        description: "User behavioral events"
+        identifier: stg_events

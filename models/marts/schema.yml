@@ -2,52 +2,121 @@ version: 2
 
 models:
   - name: dim_users
-    description: "Customer dimension with lifetime value metrics and product adoption"
+    description: |
+      Customer dimension table containing lifetime metrics and segmentation.
+      Updated daily. Grain: One row per user.
     columns:
       - name: user_id
-        description: "Primary key - unique customer identifier"
-        data_tests:
+        description: "Unique identifier for each user"
+        tests:
           - unique
           - not_null
+      - name: user_name
+        description: "User display name"
+      - name: country
+        description: "User's country of registration"
+      - name: user_segment
+        description: "Behavioral segment (new/regular/vip) based on engagement"
+      - name: registration_date
+        description: "Date user first registered with the platform"
+      - name: lifetime_gmv
+        description: "Total GMV (completed transactions only) across all products"
+      - name: lifetime_transactions
+        description: "Total number of transactions (all statuses)"
+      - name: products_used
+        description: "Count of distinct products user has transacted in"
+      - name: first_transaction_date
+        description: "Date of user's first transaction"
+      - name: last_transaction_date
+        description: "Date of user's most recent transaction"
+      - name: days_since_last_transaction
+        description: "Days between last transaction and current date"
 
   - name: fct_transactions
-    description: "Transaction fact table with full customer context"
+    description: |
+      Transaction fact table with customer context. Contains all transactions
+      across all product lines. Updated daily. Grain: One row per transaction.
     columns:
       - name: transaction_id
-        description: "Primary key - unique transaction identifier"
-        data_tests:
+        description: "Unique identifier for each transaction"
+        tests:
           - unique
           - not_null
-      
       - name: user_id
         description: "Foreign key to dim_users"
-        data_tests:
+        tests:
+          - not_null
           - relationships:
               to: ref('dim_users')
               field: user_id
+      - name: country
+        description: "User's country (denormalized for performance)"
+      - name: user_segment
+        description: "User segment at time of transaction"
+      - name: transaction_date
+        description: "Date transaction was processed"
+      - name: product
+        description: "Product vertical (bnpl, food_delivery, ride_sharing, gaming)"
+      - name: amount
+        description: "Transaction amount in USD"
+      - name: currency
+        description: "Original transaction currency"
+      - name: status
+        description: "Transaction status (Completed, Pending, Failed, Cancelled)"
+      - name: payment_method
+        description: "Payment method used"
+      - name: product_transaction_number
+        description: "Sequential transaction number within product for this user"
+      - name: overall_transaction_number
+        description: "Sequential transaction number across all products for this user"
 
   - name: fct_activation
-    description: "First transaction analysis by user and product"
+    description: |
+      Activation analysis showing first transaction by user and product.
+      Used for activation funnel and time-to-activate metrics.
+      Grain: One row per user per product.
     columns:
       - name: user_id
         description: "User identifier"
-        data_tests:
+        tests:
           - not_null
-      
       - name: product
-        description: "Product where activation occurred"
-        data_tests:
+        description: "Product vertical"
+        tests:
           - not_null
+      - name: first_transaction_date
+        description: "Date of first transaction in this product"
+      - name: first_transaction_amount
+        description: "Amount of first transaction"
+      - name: registration_date
+        description: "User registration date"
+      - name: user_segment
+        description: "User segment at activation"
+      - name: days_to_activate
+        description: "Days between registration and first transaction"
 
   - name: fct_retention
-    description: "Monthly cohort retention metrics by product"
+    description: |
+      Monthly cohort retention analysis. Tracks user retention over time
+      by product. Grain: One row per cohort per product per retention month.
     columns:
-      - name: cohort_month
-        description: "Month when user first transacted"
-        data_tests:
-          - not_null
-      
+      - name: user_id
+        description: "User identifier"
       - name: product
-        description: "Product line being analyzed"
-        data_tests:
+        description: "Product vertical"
+        tests:
           - not_null
+      - name: cohort_month
+        description: "Month of user's first transaction in this product"
+        tests:
+          - not_null
+      - name: transaction_month
+        description: "Month of transaction being analyzed"
+      - name: months_since_activation
+        description: "Number of months since cohort_month"
+      - name: cohort_size
+        description: "Total users in this cohort"
+      - name: retained_users
+        description: "Number of users still active in transaction_month"
+      - name: retention_rate
+        description: "Percentage of cohort still active (0-100)"
