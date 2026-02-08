@@ -1,0 +1,56 @@
+FATIMA FARMAN
+Data Scientist | ML Engineering | Credit Risk & Customer Analytics
+fatimafarman0@gmail.com | +92-312-2046233
+GitHub: github.com/FATIMA-FARMAN/superapp-lifecycle-analytics
+Karachi, Pakistan (UTC+5) | Open to Dubai relocation | Immediate availability
+
+PROFESSIONAL SUMMARY
+Data Scientist with 3+ years building production ML systems for fintech and BNPL platforms. Developed XGBoost churn prediction model (94% accuracy, 99.35% AUC-ROC) deployed via FastAPI, engineered 50+ behavioral features using dbt, and built end-to-end ML pipelines processing $9.1M GMV across 50,000+ transactions. Proven expertise in credit risk analytics, behavioral modeling, and scalable ML infrastructure (Python, SQL, BigQuery, Airflow).
+
+TECHNICAL SKILLS
+Machine Learning: XGBoost, LightGBM, scikit-learn (classification, regression, clustering), PyTorch (learning)
+Languages: Python (pandas, NumPy, scikit-learn, statsmodels, SciPy), SQL (BigQuery, PostgreSQL)
+Infrastructure: dbt (data modeling, testing), Airflow (orchestration), FastAPI (deployment), Git
+Domain: BNPL/Fintech, credit scoring, payment risk, behavioral scoring, A/B testing
+
+PROFESSIONAL EXPERIENCE
+
+Data Scientist - Risk & Customer Analytics | Jan 2023 - Present
+Consumer BNPL & E-commerce FinTech | Remote
+
+- Built production ML platform (github.com/FATIMA-FARMAN/superapp-lifecycle-analytics): XGBoost churn prediction (94% accuracy, 99.35% AUC-ROC), K-Means segmentation, Random Forest forecasting deployed via FastAPI with 50+ engineered features using dbt
+
+- Reduced payment failure rates by 15% (8% to 6.8%) through predictive risk scoring models processing $9.1M GMV across 50,000+ high-volume transactions with real-time monitoring dashboards
+
+- Designed behavioral scoring models achieving 22% reactivation uplift through rigorous A/B testing (n=2,000, 80% power). Implemented customer health scoring system for risk decisioning
+
+- Architected end-to-end ML feature pipeline using dbt with staging-intermediate-marts modeling. Built scalable BigQuery data marts with sub-second query performance
+
+- Automated ML workflows using Airflow for model retraining, monitoring, and validation. Reduced manual reporting by 80%
+
+- Improved customer metrics: 18% activation uplift, 12% churn reduction, 18% LTV improvement, 28% campaign effectiveness through behavioral segmentation
+
+KEY PROJECTS
+
+SuperApp ML Platform | Production-Grade ML System | Oct 2024 - Feb 2025
+github.com/FATIMA-FARMAN/superapp-lifecycle-analytics
+- Built end-to-end ML platform with 3 production models (XGBoost, K-Means, Random Forest) deployed via FastAPI
+- Engineered 50+ behavioral features using dbt for multi-product ecosystem processing 500+ users
+- Achieved 94% accuracy and 99.35% AUC-ROC on churn prediction
+- Technologies: XGBoost, scikit-learn, FastAPI, dbt, DuckDB, Python, Git
+
+BNPL Risk Analytics Platform | Oct - Dec 2024
+- Designed scalable analytics layer for risk decisions across $9.1M GMV and 50,000+ transactions
+- Built predictive risk models reducing payment failure rates 15% with real-time monitoring
+- Implemented production data modeling with 60+ automated quality tests
+
+EDUCATION & CERTIFICATIONS
+Bachelor of Electrical Engineering | Mehran University | 2018 - 2022
+- Google Cloud Platform: Data Engineering, Big Data, and ML on GCP (2024)
+- University of Pennsylvania (Wharton): Customer Analytics & People Analytics (2024)
+- PyTorch for Deep Learning (in progress - 80% complete, 2-week completion timeline)
+
+ADDITIONAL INFORMATION
+Languages: English (Fluent), Urdu (Native)
+Work Authorization: Open to Dubai relocation with visa sponsorship
+Availability: Immediate | Time Zone: UTC+5 (excellent overlap with Dubai UTC+4)

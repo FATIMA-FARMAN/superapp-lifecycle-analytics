@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: raw_csv
+    description: "Raw CSV files loaded from data/raw directory"
+    meta:
+      external_location: "data/raw/*.csv"
+    tables:
+      - name: users
+        description: "User registration and profile data from users.csv"
+        meta:
+          external_location: "data/raw/users.csv"
+      
+      - name: transactions
+        description: "Transaction records from transactions.csv"
+        meta:
+          external_location: "data/raw/transactions.csv"
+      
+      - name: events
+        description: "User behavioral events from events.csv"
+        meta:
+          external_location: "data/raw/events.csv"

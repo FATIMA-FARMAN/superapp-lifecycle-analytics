@@ -2,93 +2,72 @@ version: 2
 
 models:
   - name: stg_users
-    description: "Standardized user master from raw customer data"
+    description: "Standardized user data from raw source"
     columns:
       - name: user_id
-        description: "Unique identifier for each customer"
-        data_tests:
+        description: "Unique user identifier"
+        tests:
           - unique
           - not_null
-      
-      - name: registration_date
-        description: "Date when user signed up for the platform"
-        data_tests:
-          - not_null
-      
       - name: country
-        description: "User's country of residence"
-        data_tests:
-          - accepted_values:
-              values: ['UAE', 'Saudi Arabia', 'Egypt', 'Kuwait']
-      
-      - name: user_segment
-        description: "Customer segmentation: new, regular, or vip"
-        data_tests:
-          - accepted_values:
-              values: ['new', 'regular', 'vip']
+        description: "User's country"
+      - name: _loaded_at
+        description: "Timestamp when data was loaded into staging"
 
   - name: stg_transactions
-    description: "Standardized transaction records across all products"
+    description: "Standardized transaction data from raw source"
     columns:
       - name: transaction_id
-        description: "Unique identifier for each transaction"
-        data_tests:
+        description: "Unique transaction identifier"
+        tests:
           - unique
           - not_null
-      
       - name: user_id
-        description: "Reference to customer who made the transaction"
-        data_tests:
+        description: "User who made the transaction"
+        tests:
           - not_null
           - relationships:
               to: ref('stg_users')
               field: user_id
-      
+      - name: amount
+        description: "Transaction amount in USD"
+        tests:
+          - not_null
+      - name: transaction_date
+        description: "Transaction date"
+        tests:
+          - not_null
       - name: product
-        description: "Product line: bnpl, food_delivery, ride_sharing, or gaming"
-        data_tests:
+        description: "Product vertical"
+        tests:
           - accepted_values:
               values: ['bnpl', 'food_delivery', 'ride_sharing', 'gaming']
-      
-      - name: amount
-        description: "Transaction amount in local currency"
-        data_tests:
-          - not_null
-      
       - name: status
-        description: "Transaction status: completed, pending, or failed"
-        data_tests:
+        description: "Transaction status"
+        tests:
           - accepted_values:
-              values: ['completed', 'pending', 'failed']
-      
-      - name: transaction_date
-        description: "Timestamp when transaction occurred"
-        data_tests:
-          - not_null
+              values: ['Completed', 'Pending', 'Failed', 'Cancelled']
+      - name: _loaded_at
+        description: "Timestamp when data was loaded into staging"
 
   - name: stg_events
-    description: "Standardized user behavior events across the platform"
+    description: "Standardized event data from raw source"
     columns:
       - name: event_id
-        description: "Unique identifier for each event"
-        data_tests:
+        description: "Unique event identifier"
+        tests:
           - unique
           - not_null
-      
       - name: user_id
-        description: "Reference to user who triggered the event"
-        data_tests:
-          - relationships:
-              to: ref('stg_users')
-              field: user_id
-      
-      - name: event_type
-        description: "Type of user action: login, view, click, purchase, logout"
-        data_tests:
-          - accepted_values:
-              values: ['login', 'view', 'click', 'purchase', 'logout']
-      
-      - name: event_timestamp
-        description: "When the event occurred"
-        data_tests:
+        description: "User who triggered the event"
+        tests:
           - not_null
+      - name: event_timestamp
+        description: "Event timestamp"
+        tests:
+          - not_null
+      - name: event_type
+        description: "Type of event"
+        tests:
+          - accepted_values:
+              values: ['login', 'view', 'click', 'purchase', 'logout', 'signup', 'search']

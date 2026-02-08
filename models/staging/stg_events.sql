@@ -1,21 +1,19 @@
-{{
-    config(
-        materialized='view'
-    )
-}}
+{{ config(
+    materialized='view'
+) }}
 
-with source as (
-    select * from read_csv_auto('data/raw/events.csv', header=true)
+WITH source AS (
+    SELECT * FROM read_csv_auto('data/raw/events.csv', header=true)
 ),
 
-renamed as (
-    select
+standardized AS (
+    SELECT
         event_id,
         user_id,
-        cast(event_timestamp as timestamp) as event_timestamp,
         event_type,
-        current_timestamp as _loaded_at
-    from source
+        event_timestamp::TIMESTAMP AS event_timestamp,
+        CURRENT_TIMESTAMP AS _loaded_at
+    FROM source
 )
 
-select * from renamed
+SELECT * FROM standardized
