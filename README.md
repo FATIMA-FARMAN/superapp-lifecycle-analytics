@@ -405,3 +405,57 @@ This project is for portfolio demonstration purposes.
 **Built with ❤️ using Python, dbt, XGBoost, and FastAPI**
 
 </div>
+
+---
+
+## 📸 API Screenshots
+
+### Interactive API Documentation
+![API Overview](screenshots/dim_users_enhanced.png)
+*Production ML API with 3 prediction endpoints*
+
+### Real API Responses
+
+#### 🔴 Churn Prediction
+![Churn Response](screenshots/POST%20:predict:segment.png)
+
+**Sample Response:**
+```json
+{
+  "churn_probability": 0.0015,
+  "is_churned": false,
+  "risk_level": "low"
+}
+```
+✅ **Result:** User has 0.15% chance of churning - Low Risk
+
+#### 🔵 Customer Segmentation  
+![Segment Response](screenshots/POST%20:predict:forecast.png)
+
+**Sample Response:**
+```json
+{
+  "cluster_id": 1,
+  "segment_name": "Active Users"
+}
+```
+📊 **Result:** User classified as "Active Users" segment
+
+#### 🟢 Event Forecasting
+![Forecast Response](screenshots/POST:%20predict:forecast.png)
+
+**Sample Response:**
+```json
+{
+  "predicted_events": 22.43
+}
+```
+📈 **Result:** Predicts ~22 future events for this user
+
+---
+
+<div align="center">
+
+**Ready to explore the code?** Clone the repo and try it yourself! ⭐
+
+</div>
