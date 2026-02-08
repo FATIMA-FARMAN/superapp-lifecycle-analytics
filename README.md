@@ -1,329 +1,388 @@
-# 🚀 SuperApp Customer Lifecycle Analytics Platform
+<div align="center">
 
-[![dbt](https://img.shields.io/badge/dbt-FF694B?style=flat&logo=dbt&logoColor=white)](https://www.getdbt.com/)
-[![DuckDB](https://img.shields.io/badge/DuckDB-FFF000?style=flat&logo=duckdb&logoColor=black)](https://duckdb.org/)
+# 🚀 SuperApp ML Platform
 
-> Production-grade analytics platform processing **$68.2M GMV** across **224,614 transactions**
+### Production-Grade Machine Learning for Customer Analytics
 
-![Data Lineage](screenshots/lineage_graph.png)
+**Churn Prediction • Customer Segmentation • Engagement Forecasting**
 
-## 📊 Project Overview
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green.svg)](https://fastapi.tiangolo.com/)
+[![dbt](https://img.shields.io/badge/dbt-1.11-orange.svg)](https://www.getdbt.com/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-2.1-red.svg)](https://xgboost.ai/)
+[![License](https://img.shields.io/badge/License-Portfolio-lightgrey.svg)]()
 
-Built a comprehensive customer lifecycle analytics system for a multi-product SuperApp (BNPL, Food Delivery, Ride Sharing, Gaming) using modern data stack principles and dbt best practices.
+[Features](#-features) • [Performance](#-model-performance) • [Quick Start](#-quick-start) • [API](#-api-endpoints) • [Tech Stack](#-tech-stack)
 
-### Key Metrics
+</div>
 
-* 💰 **$68.2M** Total GMV Processed
-* 📈 **224,614** Transactions Analyzed  
-* 👥 **Multi-product** customer journey tracking
-* 📉 **Cohort-based** retention analysis
-* ✅ **19 automated tests** ensuring data quality
+---
 
-## 🏗️ Architecture
+## 🎯 Overview
 
+End-to-end machine learning platform built for a multi-product SuperApp (BNPL, food delivery, ride sharing, gaming). Features production-ready models for churn prediction, customer segmentation, and engagement forecasting, deployed via FastAPI REST API.
+
+### 🏆 Key Achievements
 ```
-Raw Data (CSV Seeds)
-    ↓
-Staging Layer (3 models)
-    ├── stg_users          [8 tests]
-    ├── stg_transactions   [6 tests]
-    └── stg_events         [5 tests]
-    ↓
-Marts Layer (4 models)
-    ├── dim_users_enhanced          [Customer master + LTV metrics]
-    ├── fct_activation              [First transaction analysis]
-    ├── fct_transactions_enhanced   [Transaction facts with context]
-    └── fct_retention               [Cohort retention tracking]
-    ↓
-Analyses (3 queries)
-    ├── retention_metrics.sql       [Monthly cohort performance]
-    ├── product_metrics.sql         [Product line KPIs]
-    └── activation_funnel.sql       [Conversion funnel analysis]
+✨ 94% Accuracy    │ 🎯 99.35% AUC-ROC    │ 📊 97% R² Score    │ ⚡ Real-time API
+   Churn Model     │  Classification      │  Forecasting       │  FastAPI Serving
 ```
 
-## 📈 Key Models & Insights
+---
 
-### `dim_users_enhanced` - Customer Dimension
+## 📊 Model Performance
 
-Complete customer master with lifetime value metrics:
-- Total GMV and transaction count
-- Product adoption tracking (1-4 products)
-- Tenure and engagement metrics
-- Activation and recency dates
+<table>
+<tr>
+<td width="33%" align="center">
 
-**Sample Insights**:
-- Premium users generate 2.3x higher GMV per customer
-- Multi-product users (2+ products) have 65% higher retention
+### 🔴 Churn Prediction
+**XGBoost Classifier**
 
-### `fct_activation` - Activation Analysis
+**94%** Accuracy  
+**99.35%** AUC-ROC  
+**95%** Precision
 
-First transaction tracking by product line:
-- Time-to-activate by customer segment
-- Product-specific activation rates
-- Cohort-based conversion analysis
+Identifies at-risk customers 30 days in advance
 
-**Sample Insights**:
-- 78% of users activate within 30 days of signup
-- BNPL has fastest activation (median 3 days)
-- Gaming shows longest time-to-first-purchase (14 days)
+</td>
+<td width="33%" align="center">
 
-### `fct_transactions_enhanced` - Transaction Facts
+### 🔵 Customer Segmentation
+**K-Means Clustering**
 
-Complete transaction history with customer context:
-- Transaction sequencing and recency
-- Days between transactions
-- Product mix and payment status
-- Customer segment at transaction time
+**4** Behavioral Segments  
+**0.255** Silhouette Score  
+**500** Users Segmented
 
-**Sample Insights**:
-- Food delivery drives highest frequency (8.2 transactions/user)
-- BNPL users show highest AOV ($847 vs. $230 overall)
+Power Users, Active, Casual, Low Engagement
 
-### `fct_retention` - Cohort Retention
+</td>
+<td width="33%" align="center">
 
-Monthly cohort analysis by product:
-- Retention rate by months since activation
-- Cohort size and activity tracking
-- Product-specific retention curves
+### 🟢 Event Forecasting
+**Random Forest Regressor**
 
-**Sample Insights**:
-- Overall month-2 retention: 56%
-- Multi-product users retain at 2x rate vs single-product
-- Premium segment shows +18pp retention advantage
+**97.13%** R² Score  
+**1.75** MAE  
+**2.52** RMSE
 
-![Model Details](screenshots/model_details.png)
+Predicts future engagement with ±2 events accuracy
 
-## 🧪 Data Quality Framework
+</td>
+</tr>
+</table>
 
-**19 automated tests** covering:
+---
 
-✅ **Uniqueness**: Primary key constraints on all fact/dimension tables  
-✅ **Referential Integrity**: Foreign key relationships validated  
-✅ **Not Null**: Critical fields verified (user_id, transaction_id, dates)  
-✅ **Accepted Values**: Status fields, product categories, segments  
-✅ **Business Logic**: GMV > 0, dates in valid ranges, retention rates 0-100%
+## ✨ Features
 
-![Test Results](screenshots/test_results.png)
+### 🎯 **Production ML Models**
+- **Churn Prediction**: Identifies customers likely to churn with 94% accuracy
+- **Customer Segmentation**: Groups users into 4 behavioral clusters for targeted marketing
+- **Event Forecasting**: Predicts future user engagement patterns
+
+### 🔧 **Feature Engineering**
+- **50+ behavioral features** engineered using dbt
+- RFM (Recency, Frequency, Monetary) analysis
+- Velocity metrics (30d/60d/90d comparisons)
+- Engagement scores and product diversity metrics
+
+### 🚀 **API Deployment**
+- FastAPI REST endpoints for real-time predictions
+- Automatic API documentation (Swagger/ReDoc)
+- Input validation with Pydantic models
+- Production-ready error handling
+
+### 📈 **Analytics Infrastructure**
+- dbt for data transformation and feature engineering
+- DuckDB for analytics warehouse
+- Modular code structure with version control
+- Comprehensive testing and documentation
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
 ```bash
-pip install dbt-duckdb
+Python 3.11+
+pip
 ```
 
-### Setup & Run
-
+### Installation
 ```bash
 # Clone repository
 git clone https://github.com/FATIMA-FARMAN/superapp-lifecycle-analytics.git
 cd superapp-lifecycle-analytics
 
-# Configure dbt profile (see SETUP.md for details)
-cp profiles_template/profiles.yml ~/.dbt/profiles.yml
-
 # Install dependencies
-dbt deps
+pip install -r requirements_api.txt
 
-# Load seed data
-dbt seed
-
-# Run pipeline
-dbt run
-
-# Run tests
-dbt test
-
-# Generate documentation
-dbt docs generate
-dbt docs serve
+# Run the API server
+python api/main.py
 ```
 
-See [SETUP.md](SETUP.md) for detailed installation instructions.
+API will be available at: **http://localhost:8000**
 
-## 📚 Documentation
+Interactive docs: **http://localhost:8000/docs**
 
-- **[Data Dictionary](DATA_DICTIONARY.md)**: Complete field definitions and business logic
-- **[Setup Guide](SETUP.md)**: Step-by-step installation and configuration
-- **[Fintech Use Cases](FINTECH_USE_CASES.md)**: How this applies to BNPL and fintech analytics
+---
 
-Interactive documentation available via dbt Docs:
+## 📡 API Endpoints
+
+### 🔴 Churn Prediction
 ```bash
-dbt docs serve
-# Navigate to http://localhost:8080
+POST /predict/churn
 ```
+
+**Request:**
+```json
+{
+  "total_events": 25,
+  "events_last_30d": 0,
+  "events_last_7d": 0,
+  "unique_event_types": 5,
+  "login_events": 5,
+  "view_events": 10,
+  "click_events": 5,
+  "purchase_events": 5,
+  "days_with_events": 20,
+  "days_since_last_event": 45
+}
+```
+
+**Response:**
+```json
+{
+  "churn_probability": 0.0015,
+  "is_churned": false,
+  "risk_level": "low"
+}
+```
+
+### 🔵 Customer Segmentation
+```bash
+POST /predict/segment
+```
+
+**Response:**
+```json
+{
+  "cluster_id": 1,
+  "segment_name": "Active Users"
+}
+```
+
+### 🟢 Event Forecasting
+```bash
+POST /predict/forecast
+```
+
+**Response:**
+```json
+{
+  "predicted_events": 22.43
+}
+```
+
+---
+
+## 🏗️ Architecture
+```
+┌─────────────┐
+│  Raw Data   │
+│  (CSV/DB)   │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────────────────┐
+│  dbt Feature Engineering    │
+│  • Staging Layer            │
+│  • Business Logic           │
+│  • ML Features (50+)        │
+└──────┬──────────────────────┘
+       │
+       ▼
+┌─────────────────────────────┐
+│  ML Model Training          │
+│  • XGBoost (Churn)          │
+│  • K-Means (Segmentation)   │
+│  • Random Forest (Forecast) │
+└──────┬──────────────────────┘
+       │
+       ▼
+┌─────────────────────────────┐
+│  FastAPI Deployment         │
+│  • REST Endpoints           │
+│  • Real-time Inference      │
+│  • Auto Documentation       │
+└─────────────────────────────┘
+```
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Orchestration**: dbt Core 1.11.2
-- **Database**: DuckDB (embedded analytics database)
-- **Version Control**: Git + GitHub
-- **Documentation**: dbt Docs with auto-generated lineage
-- **Testing**: dbt native data quality framework
+### **Machine Learning**
+- **XGBoost** - Gradient boosting for classification
+- **scikit-learn** - K-Means clustering, Random Forest regression
+- **pandas & numpy** - Data manipulation
 
-## 💼 Business Value
+### **Data Engineering**
+- **dbt** - Data transformation and feature engineering
+- **DuckDB** - Analytics database
+- **SQL** - Feature engineering queries
 
-✅ **Unified Customer View**: Single source of truth across all product lines  
-✅ **Data Quality Automation**: 19 tests preventing bad data from reaching dashboards  
-✅ **Self-Service Analytics**: Documented models enabling analyst independence  
-✅ **Production-Ready**: Modular architecture supporting 200K+ transactions  
-✅ **Scalable Design**: Staging → Marts pattern ready for cloud deployment
+### **API & Deployment**
+- **FastAPI** - REST API framework
+- **Pydantic** - Data validation
+- **Uvicorn** - ASGI server
 
-## 🎯 Use Cases
+### **Tools**
+- **Git** - Version control
+- **Python** - Primary language
+- **Docker** - Containerization (optional)
 
-### 1. Customer Activation Optimization
-Identify friction points in onboarding and measure time-to-first-purchase by segment and product.
-
-### 2. Retention & Churn Analysis
-Track cohort health over time, identify at-risk segments, and measure impact of retention initiatives.
-
-### 3. Cross-Product Adoption
-Understand multi-product usage journeys and optimize product recommendations.
-
-### 4. Lifetime Value Modeling
-Calculate customer LTV by segment, product mix, and activation cohort for CAC payback analysis.
-
-### 5. Product Performance
-Compare GMV, frequency, and retention across product lines to inform product strategy.
-
-## 💳 BNPL & Fintech Applications
-
-This project demonstrates analytics patterns directly applicable to Buy Now Pay Later platforms like **Tabby**:
-
-- **Credit Risk Assessment**: Early transaction behavior predicts repayment patterns
-- **Installment Tracking**: Cohort analysis models payment plan performance
-- **Fraud Detection**: Behavioral anomaly detection via transaction velocity and patterns
-- **Merchant Analytics**: Product-level performance tracking for merchant partnerships
-- **Customer Segmentation**: Risk-based tiering using multi-product engagement
-
-See [FINTECH_USE_CASES.md](FINTECH_USE_CASES.md) for detailed applications.
+---
 
 ## 📁 Project Structure
-
 ```
 superapp-lifecycle-analytics/
-├── models/
-│   ├── staging/                    # Raw data standardization
-│   │   ├── stg_users.sql
-│   │   ├── stg_transactions.sql
-│   │   └── stg_events.sql
-│   ├── marts/                      # Business logic layer
-│   │   ├── dim_users_enhanced.sql
-│   │   ├── fct_activation.sql
-│   │   ├── fct_transactions_enhanced.sql
-│   │   └── fct_retention.sql
-│   └── schema.yml                  # Tests and documentation
-├── analyses/                       # Ad-hoc analytical queries
-├── seeds/                          # CSV source data
-├── macros/                         # Custom dbt macros
-├── screenshots/                    # Documentation images
-├── profiles_template/              # dbt profile configuration
-├── dbt_project.yml                # Project configuration
-├── SETUP.md                        # Installation guide
-├── DATA_DICTIONARY.md              # Field definitions
-└── FINTECH_USE_CASES.md            # Industry applications
+├── api/                          # FastAPI application
+│   └── main.py                  # API endpoints
+├── models/                       # dbt models
+│   ├── staging/                 # Data cleaning
+│   ├── intermediate/            # Business logic
+│   ├── marts/                   # Analytics tables
+│   └── ml_features/             # Feature engineering
+├── models_ml/                    # Trained ML models
+│   ├── churn_prediction/
+│   │   ├── train_model.py
+│   │   └── outputs/
+│   │       ├── xgboost_churn_model.pkl
+│   │       ├── scaler.pkl
+│   │       └── metrics.json
+│   ├── segmentation/
+│   │   └── outputs/
+│   └── forecasting/
+│       └── outputs/
+├── scripts/                      # Utility scripts
+├── data/                         # Raw data
+├── requirements_api.txt          # Python dependencies
+└── dbt_project.yml              # dbt configuration
 ```
-
-## 📊 Sample Analyses
-
-### Retention Metrics
-
-```sql
--- Monthly retention rates by product and cohort
-SELECT 
-    product,
-    cohort_month,
-    months_since_activation,
-    cohort_size,
-    active_users,
-    retention_rate
-FROM {{ ref('fct_retention') }}
-WHERE months_since_activation <= 12
-ORDER BY product, cohort_month, months_since_activation;
-```
-
-### Product Performance
-
-```sql
--- GMV and engagement metrics by product line
-SELECT 
-    product,
-    COUNT(DISTINCT user_id) as total_users,
-    SUM(amount) as total_gmv,
-    SUM(amount) / COUNT(DISTINCT user_id) as gmv_per_user,
-    COUNT(*) / COUNT(DISTINCT user_id) as transactions_per_user,
-    AVG(amount) as avg_order_value
-FROM {{ ref('fct_transactions_enhanced') }}
-WHERE status = 'Completed'
-GROUP BY product
-ORDER BY total_gmv DESC;
-```
-
-### Activation Funnel
-
-```sql
--- Conversion rates from signup to first purchase
-WITH user_base AS (
-    SELECT 
-        user_segment,
-        COUNT(*) as signups
-    FROM {{ ref('stg_users') }}
-    GROUP BY user_segment
-),
-activations AS (
-    SELECT 
-        u.user_segment,
-        COUNT(DISTINCT a.user_id) as activated_users,
-        AVG(a.days_to_activate) as avg_days_to_activate
-    FROM {{ ref('fct_activation') }} a
-    JOIN {{ ref('stg_users') }} u ON a.user_id = u.user_id
-    GROUP BY u.user_segment
-)
-SELECT 
-    b.user_segment,
-    b.signups,
-    COALESCE(a.activated_users, 0) as activated_users,
-    ROUND(100.0 * COALESCE(a.activated_users, 0) / b.signups, 2) as activation_rate,
-    ROUND(a.avg_days_to_activate, 1) as avg_days_to_activate
-FROM user_base b
-LEFT JOIN activations a ON b.user_segment = a.user_segment;
-```
-
 
 ---
 
-## 📈 Project Evolution
+## 🎓 Skills Demonstrated
 
-**Development Timeline**: 20 days (intensive sprint)
+<table>
+<tr>
+<td>
 
-1. **Days 1-5**: Data modeling and staging layer implementation
-2. **Days 6-12**: Marts layer development and business logic
-3. **Days 13-17**: Testing framework and data quality automation
-4. **Days 18-20**: Documentation, analyses, and portfolio optimization
+**Machine Learning**
+- Model training & evaluation
+- Hyperparameter tuning
+- Feature engineering
+- Model interpretability
+- Production deployment
 
-**Key Learnings**:
-- Modular dbt architecture scales much better than monolithic SQL
-- Early testing saves hours of debugging downstream
-- Clear documentation makes models self-service for stakeholders
+</td>
+<td>
+
+**Data Engineering**
+- dbt modeling
+- SQL optimization
+- ETL/ELT pipelines
+- Data quality testing
+- Analytics infrastructure
+
+</td>
+<td>
+
+**Software Engineering**
+- API development
+- Code modularity
+- Version control (Git)
+- Documentation
+- Error handling
+
+</td>
+</tr>
+</table>
 
 ---
-## 👩‍💻 About
-    
+
+## 📊 Feature Importance
+
+### Churn Prediction Model
+| Feature | Importance |
+|---------|-----------|
+| total_events | 63.4% |
+| days_since_last_event | 18.5% |
+| days_with_events | 4.8% |
+| view_events | 4.1% |
+| purchase_events | 3.8% |
+
+---
+
+## 💡 Business Impact
+
+**Potential ROI:**
+- **10-15%** reduction in churn through proactive interventions
+- **20%** increase in campaign effectiveness via segmentation
+- **Improved** resource allocation based on engagement forecasting
+
+**Use Cases:**
+- 🎯 **Retention**: Predict churn 30 days in advance
+- 📧 **Marketing**: Segment-specific campaigns
+- 📈 **Planning**: Forecast engagement for capacity planning
+- 💰 **Monetization**: Target high-value Power Users
+
+---
+
+## 🔮 Future Enhancements
+
+- [ ] Deploy to cloud (GCP Cloud Run / AWS Lambda)
+- [ ] Add MLflow for experiment tracking
+- [ ] Implement model monitoring and retraining pipeline
+- [ ] Add A/B testing framework
+- [ ] Create interactive dashboards
+- [ ] Add PyTorch neural network component
+
+---
+
+## 📚 Documentation
+
+- 📖 [API Documentation](http://localhost:8000/docs) - Interactive Swagger UI
+- 📘 [ReDoc](http://localhost:8000/redoc) - Alternative API docs
+- 📄 [Skills Matrix](SKILLS_DEMONSTRATED.md) - Detailed skills breakdown
+
+---
+
+## 👤 Author
+
 **Fatima Farman**
-*Analytics Engineer | BNPL & Fintech Product Analytics*
-    
-- 📍 Based in Karachi, Pakistan | Open to Dubai opportunities
-- 💼 3+ years in consumer fintech, HR analytics, and data engineering
-- 🎯 Expertise: Customer lifecycle analytics, dbt, SQL, Python, BigQuery, Looker
-- 🏆 Certifications: Google Cloud (Data Engineering, Warehousing), dbt Analytics Engineering
-    
-📧 **Email**: [your.email@example.com](mailto:your.email@example.com)
-💼 **LinkedIn**: [linkedin.com/in/fatima-farman](https://linkedin.com/in/fatima-farman)
-🌐 **Portfolio**: [github.com/FATIMA-FARMAN](https://github.com/FATIMA-FARMAN)
-    
 
+Analytics Engineer & ML Practitioner specializing in production ML pipelines, feature engineering, and analytics infrastructure.
 
-⭐ **Star this repo** if you find it helpful for your own analytics projects!
+- 📧 Email: fatima.work@example.com
+- 💼 LinkedIn: [linkedin.com/in/fatima-farman](https://linkedin.com/in/fatima-farman)
+- 🐙 GitHub: [@FATIMA-FARMAN](https://github.com/FATIMA-FARMAN)
 
-Built with ❤️ using dbt + DuckDB | Optimized for fintech applications
+---
+
+## 📄 License
+
+This project is for portfolio demonstration purposes.
+
+---
+
+<div align="center">
+
+### ⭐ If you found this project interesting, please star the repository!
+
+**Built with ❤️ using Python, dbt, XGBoost, and FastAPI**
+
+</div>
