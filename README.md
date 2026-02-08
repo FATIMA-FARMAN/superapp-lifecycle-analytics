@@ -130,6 +130,25 @@ Interactive docs: **http://localhost:8000/docs**
 ---
 
 ## 📡 API Endpoints
+---
+
+## 📸 Live API Demonstrations
+
+### Interactive Documentation
+![Swagger UI](screenshots/dim_users_enhanced.png)
+
+### Real Prediction Examples
+
+**Churn Prediction Response:**
+![Churn API](screenshots/POST%20:predict:segment.png)
+
+**Customer Segmentation:**
+![Segment API](screenshots/POST%20:predict:forecast.png)
+
+**Event Forecasting:**
+![Forecast API](screenshots/POST:%20predict:forecast.png)
+
+> All screenshots show real API responses from the deployed FastAPI server
 
 ### 🔴 Churn Prediction
 ```bash
