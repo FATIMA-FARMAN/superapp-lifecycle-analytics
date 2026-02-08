@@ -1,0 +1,12 @@
+{
+  "n_clusters": 4,
+  "total_users": 500,
+  "silhouette_score": 0.25540054542121465,
+  "davies_bouldin_score": 1.2117742577456194,
+  "cluster_sizes": {
+    "0": 209,
+    "1": 159,
+    "2": 28,
+    "3": 104
+  }
+}

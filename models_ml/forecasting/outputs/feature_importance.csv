@@ -1,0 +1,10 @@
+feature,importance
+days_with_events,0.9566403001783446
+login_events,0.016582200661425232
+view_events,0.014711628101192207
+click_events,0.0045456558316970255
+days_since_last_event,0.004400527029990612
+purchase_events,0.002882541731167899
+unique_event_types,0.00023714646618256158
+events_last_30d,0.0
+events_last_7d,0.0

@@ -1,111 +1,32 @@
-# dbt artifacts
-target/
-dbt_packages/
-logs/
-*.log
-
-# DuckDB database files
-*.duckdb
-*.duckdb.wal
-
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-.venv/
+*.pyc
+.Python
+env/
 venv/
-ENV/
+*.egg-info/
+
+# dbt
+target/
+dbt_packages/
+logs/
+*.duckdb
+*.duckdb.wal
+dev.duckdb
+superapp_analytics.duckdb
 
 # IDE
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
 
 # OS
 .DS_Store
-Thumbs.db
 
-# Backup files
-*.backup
-*.bak
-dev.duckdb
-*.backup
-target/
-dbt_packages/
-logs/
+# Models (keep the .pkl files but ignore large data)
+# Uncomment if models are too large for GitHub
+# *.pkl
 
-# dbt artifacts
-target/
-dbt_packages/
-logs/
-*.backup
-
-# DuckDB database files
-*.duckdb
-*.duckdb.wal
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-.env
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# dbt artifacts
-target/
-dbt_packages/
-logs/
-*.backup
-
-# DuckDB database files
-*.duckdb
-*.duckdb.wal
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-.env
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# dbt artifacts
-target/
-dbt_packages/
-logs/
-*.backup
-*.duckdb
-*.duckdb.wal
-__pycache__/
-.venv/
-.DS_Store
-.vscode/
-
-# Additional cleanup
-README.md.backup
-*.sh
-commit_message.txt
-superapp_analytics.duckdb
+# Data
+data/raw/*.csv

@@ -1,0 +1,9 @@
+events_last_30d
+events_last_7d
+unique_event_types
+login_events
+view_events
+click_events
+purchase_events
+days_with_events
+days_since_last_event

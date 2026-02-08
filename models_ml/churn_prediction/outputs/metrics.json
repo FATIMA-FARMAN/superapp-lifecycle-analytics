@@ -1,0 +1,8 @@
+{
+  "train_samples": 400,
+  "test_samples": 100,
+  "churn_rate": 0.4,
+  "auc_roc": 0.9935416666666667,
+  "accuracy": 0.94,
+  "note": "Synthetic labels for demonstration - use real historical data in production"
+}
