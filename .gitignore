@@ -28,3 +28,5 @@ data/raw/*.csv
 *.duckdb
 *.duckdb-wal
 *.duckdb-shm
+backups/
+*.backup
