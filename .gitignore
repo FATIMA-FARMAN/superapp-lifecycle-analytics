@@ -25,3 +25,6 @@ logs/
 
 # Data
 data/raw/*.csv
+*.duckdb
+*.duckdb-wal
+*.duckdb-shm
