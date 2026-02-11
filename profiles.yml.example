@@ -1,0 +1,15 @@
+superapp_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: dev.duckdb
+      threads: 4
+
+    prod:
+      type: bigquery
+      method: service-account
+      project: your-gcp-project-id
+      dataset: superapp_analytics
+      threads: 4
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
