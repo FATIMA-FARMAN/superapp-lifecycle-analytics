@@ -1,0 +1,9 @@
+.git
+__pycache__
+*.pyc
+target/
+dbt_packages/
+logs/
+*.duckdb
+*.duckdb.wal
+.DS_Store

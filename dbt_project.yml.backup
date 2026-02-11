@@ -1,5 +1,0 @@
-
-    # Intermediate models
-    intermediate:
-      +materialized: view
-      +schema: intermediate
