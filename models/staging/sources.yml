@@ -1,22 +1,40 @@
 version: 2
 
 sources:
-  - name: raw_csv
-    description: "Raw CSV files from SuperApp transactions"
+  - name: raw
+    description: "Raw data from SuperApp ingestion pipeline"
     freshness:
       warn_after: {count: 24, period: hour}
       error_after: {count: 48, period: hour}
-    loaded_at_field: _loaded_at
-    
+    loaded_at_field: created_at
+
     tables:
       - name: users
-        description: "User registration and profile data"
-        identifier: stg_users
-        
+        description: "Raw user registration data"
+        columns:
+          - name: user_id
+            tests: [unique, not_null]
+          - name: created_at
+            tests: [not_null]
+
       - name: transactions
-        description: "Transaction records across all products"
-        identifier: stg_transactions
-        
+        description: "Raw transaction events across all products"
+        columns:
+          - name: transaction_id
+            tests: [unique, not_null]
+          - name: user_id
+            tests: [not_null]
+          - name: amount
+            tests: [not_null]
+          - name: transaction_date
+            tests: [not_null]
+
       - name: events
-        description: "User behavioral events"
-        identifier: stg_events
+        description: "Raw user behavioural events"
+        columns:
+          - name: event_id
+            tests: [unique, not_null]
+          - name: user_id
+            tests: [not_null]
+          - name: event_timestamp
+            tests: [not_null]
