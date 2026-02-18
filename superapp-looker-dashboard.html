@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SuperApp Lifecycle Analytics | Looker Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e29;
+    --border: #252a38;
+    --border2: #2e3447;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #4f8ef7;
+    --accent2: #7c5cfc;
+    --green: #22c55e;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --teal: #14b8a6;
+    --pink: #ec4899;
+    --bnpl: #4f8ef7;
+    --food: #22c55e;
+    --ride: #f59e0b;
+    --gaming: #ec4899;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 20px; }
+  .logo { display: flex; align-items: center; gap: 8px; }
+  .logo-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
+  .breadcrumb {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .breadcrumb span { color: var(--text); }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .date-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--border2); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #3b7de0; }
+
+  /* ─── Filters Bar ─── */
+  .filters {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 28px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-chip {
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 10px;
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    background: var(--surface2);
+    font-size: 11.5px; cursor: pointer;
+    transition: 0.15s;
+  }
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-chip.active { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.08); }
+  .filter-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .filter-sep { color: var(--border2); margin: 0 4px; }
+
+  /* ─── Main Layout ─── */
+  .main { padding: 20px 28px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ─── KPI Row ─── */
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .kpi-card.blue::before { background: var(--accent); }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.orange::before { background: var(--orange); }
+  .kpi-card.teal::before { background: var(--teal); }
+  .kpi-card.pink::before { background: var(--pink); }
+  .kpi-card:hover { border-color: var(--border2); }
+  .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .kpi-value { font-size: 26px; font-weight: 600; letter-spacing: -1px; line-height: 1; margin-bottom: 6px; font-family: 'DM Mono', monospace; }
+  .kpi-delta {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; font-weight: 500;
+    padding: 2px 6px; border-radius: 4px;
+  }
+  .kpi-delta.up { color: var(--green); background: rgba(34,197,94,0.1); }
+  .kpi-delta.down { color: var(--red); background: rgba(239,68,68,0.1); }
+  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ─── Grid Rows ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
+  .grid-2-1 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+
+  /* ─── Chart Cards ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 12.5px; font-weight: 600; }
+  .card-subtitle { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .card-actions { display: flex; gap: 6px; align-items: center; }
+  .card-body { padding: 16px 18px; }
+  .tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    background: rgba(79,142,247,0.12);
+    color: var(--accent);
+  }
+  .tag.green { background: rgba(34,197,94,0.12); color: var(--green); }
+
+  /* ─── SVG Charts ─── */
+  svg { display: block; }
+  .axis-text { fill: #4b5563; font-size: 10px; font-family: 'DM Mono', monospace; }
+  .grid-line { stroke: #1f2535; stroke-width: 1; }
+
+  /* ─── Retention Heatmap ─── */
+  .retention-table { width: 100%; border-collapse: collapse; }
+  .retention-table th {
+    font-size: 10px; color: var(--muted);
+    font-weight: 500; text-align: center;
+    padding: 5px 4px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .retention-table th.row-header { text-align: left; padding-left: 0; }
+  .retention-table td {
+    text-align: center; padding: 3px 4px;
+    font-size: 11px; font-family: 'DM Mono', monospace;
+    font-weight: 500;
+  }
+  .retention-table td.cohort-label {
+    text-align: left; padding-left: 0;
+    color: var(--muted); font-size: 10.5px;
+  }
+  .cell {
+    display: inline-block;
+    width: 44px; height: 28px;
+    line-height: 28px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ─── Product Table ─── */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    font-weight: 500; padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  .data-table th:first-child { text-align: left; }
+  .data-table td {
+    padding: 9px 10px; font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  .data-table td:first-child { text-align: left; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .product-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-weight: 500;
+  }
+  .product-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .bar-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .mini-bar { height: 4px; border-radius: 2px; }
+  .badge-pos { color: var(--green); background: rgba(34,197,94,0.1); padding: 1px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 500; }
+  .badge-neg { color: var(--red); background: rgba(239,68,68,0.1); padding: 1px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 500; }
+
+  /* ─── Funnel ─── */
+  .funnel-step { margin-bottom: 10px; }
+  .funnel-labels { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .funnel-name { font-size: 12px; color: var(--muted); }
+  .funnel-nums { display: flex; gap: 12px; align-items: center; }
+  .funnel-count { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; }
+  .funnel-pct { font-size: 11px; color: var(--muted); }
+  .funnel-bar-bg { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .funnel-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .funnel-conv { font-size: 10.5px; color: var(--muted); text-align: right; margin-top: 2px; }
+
+  /* ─── Sparklines ─── */
+  .sparkline-row { display: flex; flex-direction: column; gap: 12px; }
+  .spark-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .spark-label { font-size: 11.5px; color: var(--muted); width: 80px; flex-shrink: 0; }
+  .spark-svg { flex: 1; }
+  .spark-val { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; width: 50px; text-align: right; flex-shrink: 0; }
+
+  /* ─── Legend ─── */
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+  .legend-line { width: 14px; height: 2px; border-radius: 1px; }
+
+  /* ─── Gauge ─── */
+  .gauge-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .gauge-item { text-align: center; }
+  .gauge-val { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 600; }
+  .gauge-name { font-size: 10px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  /* ─── Footer ─── */
+  .footer { padding: 12px 28px; border-top: 1px solid var(--border); color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .kpi-card, .card { animation: fadeUp 0.4s ease both; }
+  .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+  .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+  .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+  .kpi-card:nth-child(4) { animation-delay: 0.2s; }
+  .kpi-card:nth-child(5) { animation-delay: 0.25s; }
+</style>
+</head>
+<body>
+
+<!-- ─── Header ─── -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo">
+      <div class="logo-icon">📊</div>
+      <span class="logo-text">Looker</span>
+    </div>
+    <div class="breadcrumb">
+      <span style="color:var(--muted)">Analytics</span>
+      <span style="color:var(--muted)">/</span>
+      <span style="color:var(--muted)">SuperApp</span>
+      <span style="color:var(--muted)">/</span>
+      <span>Customer Lifecycle</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="date-pill">Jan 2023 – Dec 2023</div>
+    <button class="btn">⬇ Export</button>
+    <button class="btn">⚙ Schedule</button>
+    <button class="btn btn-primary">▲ Share</button>
+  </div>
+</header>
+
+<!-- ─── Filters ─── -->
+<div class="filters">
+  <span class="filter-label">Filter by</span>
+  <div class="filter-chip active"><div class="filter-dot" style="background:var(--accent)"></div> All Products</div>
+  <div class="filter-chip"><div class="filter-dot" style="background:var(--bnpl)"></div> BNPL</div>
+  <div class="filter-chip"><div class="filter-dot" style="background:var(--food)"></div> Food Delivery</div>
+  <div class="filter-chip"><div class="filter-dot" style="background:var(--ride)"></div> Ride Sharing</div>
+  <div class="filter-chip"><div class="filter-dot" style="background:var(--gaming)"></div> Gaming</div>
+  <span class="filter-sep">|</span>
+  <div class="filter-chip">Segment: All</div>
+  <div class="filter-chip">Country: All</div>
+  <div style="margin-left:auto; font-size:11px; color:var(--muted)">224,614 rows · refreshed 2 hrs ago</div>
+</div>
+
+<!-- ─── Main ─── -->
+<main class="main">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card blue">
+      <div class="kpi-label">Total GMV</div>
+      <div class="kpi-value" style="color:var(--accent)">$68.2M</div>
+      <div><span class="kpi-delta up">↑ 23.4%</span></div>
+      <div class="kpi-sub">vs. prior period</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Total Transactions</div>
+      <div class="kpi-value" style="color:var(--green)">224.6K</div>
+      <div><span class="kpi-delta up">↑ 18.7%</span></div>
+      <div class="kpi-sub">+35.2K vs. prior</div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-label">Active Users</div>
+      <div class="kpi-value" style="color:var(--orange)">41.2K</div>
+      <div><span class="kpi-delta up">↑ 11.2%</span></div>
+      <div class="kpi-sub">MAU (30-day window)</div>
+    </div>
+    <div class="kpi-card teal">
+      <div class="kpi-label">Avg GMV / User</div>
+      <div class="kpi-value" style="color:var(--teal)">$304</div>
+      <div><span class="kpi-delta up">↑ 7.8%</span></div>
+      <div class="kpi-sub">LTV proxy metric</div>
+    </div>
+    <div class="kpi-card pink">
+      <div class="kpi-label">Multi-Product Rate</div>
+      <div class="kpi-value" style="color:var(--pink)">38.4%</div>
+      <div><span class="kpi-delta down">↓ 1.2pp</span></div>
+      <div class="kpi-sub">Users with 2+ products</div>
+    </div>
+  </div>
+
+  <!-- Row 2: GMV Trend + Product Mix -->
+  <div class="grid-2">
+
+    <!-- GMV Over Time -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Monthly GMV by Product</div>
+          <div class="card-subtitle">Stacked area — 12-month rolling</div>
+        </div>
+        <div class="card-actions">
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--bnpl)"></div>BNPL</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--food)"></div>Food</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--ride)"></div>Ride</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--gaming)"></div>Gaming</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body" style="padding-top:10px">
+        <svg width="100%" height="180" viewBox="0 0 580 180" preserveAspectRatio="none">
+          <!-- Grid -->
+          <line x1="40" y1="20" x2="570" y2="20" class="grid-line"/>
+          <line x1="40" y1="60" x2="570" y2="60" class="grid-line"/>
+          <line x1="40" y1="100" x2="570" y2="100" class="grid-line"/>
+          <line x1="40" y1="140" x2="570" y2="140" class="grid-line"/>
+          <!-- Y labels -->
+          <text x="32" y="24" class="axis-text" text-anchor="end">$8M</text>
+          <text x="32" y="64" class="axis-text" text-anchor="end">$6M</text>
+          <text x="32" y="104" class="axis-text" text-anchor="end">$4M</text>
+          <text x="32" y="144" class="axis-text" text-anchor="end">$2M</text>
+          <!-- X labels -->
+          <text x="80" y="166" class="axis-text" text-anchor="middle">Jan</text>
+          <text x="125" y="166" class="axis-text" text-anchor="middle">Feb</text>
+          <text x="170" y="166" class="axis-text" text-anchor="middle">Mar</text>
+          <text x="215" y="166" class="axis-text" text-anchor="middle">Apr</text>
+          <text x="260" y="166" class="axis-text" text-anchor="middle">May</text>
+          <text x="305" y="166" class="axis-text" text-anchor="middle">Jun</text>
+          <text x="350" y="166" class="axis-text" text-anchor="middle">Jul</text>
+          <text x="395" y="166" class="axis-text" text-anchor="middle">Aug</text>
+          <text x="440" y="166" class="axis-text" text-anchor="middle">Sep</text>
+          <text x="485" y="166" class="axis-text" text-anchor="middle">Oct</text>
+          <text x="530" y="166" class="axis-text" text-anchor="middle">Nov</text>
+          <!-- BNPL area -->
+          <path d="M80,110 L125,105 L170,98 L215,92 L260,86 L305,80 L350,74 L395,68 L440,62 L485,58 L530,52 L530,140 L485,140 L440,140 L395,140 L350,140 L305,140 L260,140 L215,140 L170,140 L125,140 L80,140 Z" fill="rgba(79,142,247,0.25)" />
+          <path d="M80,110 L125,105 L170,98 L215,92 L260,86 L305,80 L350,74 L395,68 L440,62 L485,58 L530,52" fill="none" stroke="var(--bnpl)" stroke-width="2"/>
+          <!-- Food area -->
+          <path d="M80,122 L125,119 L170,115 L215,112 L260,108 L305,105 L350,101 L395,97 L440,95 L485,92 L530,89 L530,110 L485,105 L440,98 L395,92 L350,86 L305,80 L260,75 L215,70 L170,66 L125,62 L80,60" fill="rgba(34,197,94,0.18)" />
+          <path d="M80,122 L125,119 L170,115 L215,112 L260,108 L305,105 L350,101 L395,97 L440,95 L485,92 L530,89" fill="none" stroke="var(--food)" stroke-width="2"/>
+          <!-- Ride area -->
+          <path d="M80,130 L125,128 L170,127 L215,125 L260,124 L305,122 L350,120 L395,118 L440,117 L485,115 L530,113 L530,122 L485,120 L440,118 L395,116 L350,114 L305,112 L260,110 L215,108 L170,106 L125,104 L80,103" fill="rgba(245,158,11,0.18)" />
+          <path d="M80,130 L125,128 L170,127 L215,125 L260,124 L305,122 L350,120 L395,118 L440,117 L485,115 L530,113" fill="none" stroke="var(--ride)" stroke-width="2"/>
+          <!-- Gaming area -->
+          <path d="M80,137 L125,136 L170,135 L215,134 L260,133 L305,132 L350,131 L395,130 L440,130 L485,129 L530,128 L530,132 L485,132 L440,132 L395,132 L350,132 L305,132 L260,132 L215,132 L170,132 L125,132 L80,132" fill="rgba(236,72,153,0.18)" />
+          <path d="M80,137 L125,136 L170,135 L215,134 L260,133 L305,132 L350,131 L395,130 L440,130 L485,129 L530,128" fill="none" stroke="var(--gaming)" stroke-width="2"/>
+          <!-- Tooltip marker -->
+          <circle cx="440" cy="62" r="4" fill="var(--bnpl)" />
+          <rect x="390" y="36" width="80" height="24" rx="4" fill="#1a1e29" stroke="#252a38"/>
+          <text x="430" y="48" text-anchor="middle" fill="#e8eaf0" font-size="11" font-family="DM Mono, monospace">$6.7M Sep</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Product Mix Donut -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">GMV by Product</div>
+          <div class="card-subtitle">Share of wallet — full period</div>
+        </div>
+        <div class="tag">YTD</div>
+      </div>
+      <div class="card-body" style="display:flex; gap:20px; align-items:center">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <!-- Donut segments: BNPL 47%, Food 28%, Ride 16%, Gaming 9% -->
+          <!-- BNPL -->
+          <path d="M80,80 L80,12 A68,68 0 0,1 148,80 Z" fill="rgba(79,142,247,0.9)"/>
+          <path d="M80,80 L148,80 A68,68 0 0,1 46.4,133 Z" fill="rgba(79,142,247,0.6)"/>
+          <!-- Food -->
+          <path d="M80,80 L46.4,133 A68,68 0 0,1 80,12 Z" fill="rgba(34,197,94,0.0)"/>
+          <path d="M80,80 L46.4,133 A68,68 0 0,1 14.8,55 Z" fill="rgba(34,197,94,0.9)"/>
+          <!-- Ride -->
+          <path d="M80,80 L14.8,55 A68,68 0 0,1 57,14.5 Z" fill="rgba(245,158,11,0.9)"/>
+          <!-- Gaming -->
+          <path d="M80,80 L57,14.5 A68,68 0 0,1 80,12 Z" fill="rgba(236,72,153,0.9)"/>
+          <!-- Inner circle -->
+          <circle cx="80" cy="80" r="44" fill="#13161e"/>
+          <text x="80" y="76" text-anchor="middle" fill="#e8eaf0" font-size="18" font-weight="600" font-family="DM Mono, monospace">$68.2M</text>
+          <text x="80" y="92" text-anchor="middle" fill="#6b7280" font-size="10">Total GMV</text>
+        </svg>
+        <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--bnpl)"></div><span style="color:var(--text)">BNPL</span></div>
+              <span style="font-family:'DM Mono',monospace; font-size:12px; font-weight:600">$32.1M <span style="color:var(--muted); font-size:10px">47%</span></span>
+            </div>
+            <div style="height:4px; background:var(--surface2); border-radius:2px;"><div style="width:47%; height:100%; background:var(--bnpl); border-radius:2px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--food)"></div><span style="color:var(--text)">Food Delivery</span></div>
+              <span style="font-family:'DM Mono',monospace; font-size:12px; font-weight:600">$19.1M <span style="color:var(--muted); font-size:10px">28%</span></span>
+            </div>
+            <div style="height:4px; background:var(--surface2); border-radius:2px;"><div style="width:28%; height:100%; background:var(--food); border-radius:2px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--ride)"></div><span style="color:var(--text)">Ride Sharing</span></div>
+              <span style="font-family:'DM Mono',monospace; font-size:12px; font-weight:600">$10.9M <span style="color:var(--muted); font-size:10px">16%</span></span>
+            </div>
+            <div style="height:4px; background:var(--surface2); border-radius:2px;"><div style="width:16%; height:100%; background:var(--ride); border-radius:2px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--gaming)"></div><span style="color:var(--text)">Gaming</span></div>
+              <span style="font-family:'DM Mono',monospace; font-size:12px; font-weight:600">$6.1M <span style="color:var(--muted); font-size:10px">9%</span></span>
+            </div>
+            <div style="height:4px; background:var(--surface2); border-radius:2px;"><div style="width:9%; height:100%; background:var(--gaming); border-radius:2px;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Cohort Retention + Activation Funnel -->
+  <div class="grid-2">
+
+    <!-- Retention Heatmap -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Cohort Retention Heatmap — BNPL</div>
+          <div class="card-subtitle">Monthly cohorts · % retained at M+N</div>
+        </div>
+        <div class="tag green">fct_retention</div>
+      </div>
+      <div class="card-body" style="padding-top:12px; overflow-x:auto;">
+        <table class="retention-table">
+          <thead>
+            <tr>
+              <th class="row-header">Cohort</th>
+              <th>M+0</th><th>M+1</th><th>M+2</th><th>M+3</th><th>M+4</th><th>M+5</th><th>M+6</th>
+            </tr>
+          </thead>
+          <tbody id="heatmap-body"></tbody>
+        </table>
+        <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+          <span style="font-size:10px; color:var(--muted)">Low</span>
+          <div style="display:flex; gap:2px;">
+            <div style="width:16px;height:12px;border-radius:2px;background:rgba(79,142,247,0.08)"></div>
+            <div style="width:16px;height:12px;border-radius:2px;background:rgba(79,142,247,0.2)"></div>
+            <div style="width:16px;height:12px;border-radius:2px;background:rgba(79,142,247,0.36)"></div>
+            <div style="width:16px;height:12px;border-radius:2px;background:rgba(79,142,247,0.54)"></div>
+            <div style="width:16px;height:12px;border-radius:2px;background:rgba(79,142,247,0.72)"></div>
+            <div style="width:16px;height:12px;border-radius:2px;background:rgba(79,142,247,0.9)"></div>
+          </div>
+          <span style="font-size:10px; color:var(--muted)">High</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activation Funnel -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Activation Funnel</div>
+          <div class="card-subtitle">User journey · first transaction analysis</div>
+        </div>
+        <div class="tag">fct_activation</div>
+      </div>
+      <div class="card-body" style="padding-top:12px;">
+        <div class="funnel-step">
+          <div class="funnel-labels">
+            <span class="funnel-name">Registered Users</span>
+            <div class="funnel-nums"><span class="funnel-count">52,840</span><span class="funnel-pct">100%</span></div>
+          </div>
+          <div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:100%;background:var(--accent)"></div></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-align:right;margin:-6px 0 6px">↓ 88.4% conversion</div>
+        <div class="funnel-step">
+          <div class="funnel-labels">
+            <span class="funnel-name">Profile Completed</span>
+            <div class="funnel-nums"><span class="funnel-count">46,710</span><span class="funnel-pct">88.4%</span></div>
+          </div>
+          <div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:88.4%;background:var(--accent)"></div></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-align:right;margin:-6px 0 6px">↓ 76.1% conversion</div>
+        <div class="funnel-step">
+          <div class="funnel-labels">
+            <span class="funnel-name">KYC Verified</span>
+            <div class="funnel-nums"><span class="funnel-count">35,540</span><span class="funnel-pct">67.3%</span></div>
+          </div>
+          <div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:67.3%;background:var(--teal)"></div></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-align:right;margin:-6px 0 6px">↓ 88.2% conversion</div>
+        <div class="funnel-step">
+          <div class="funnel-labels">
+            <span class="funnel-name">First Transaction</span>
+            <div class="funnel-nums"><span class="funnel-count">31,350</span><span class="funnel-pct">59.3%</span></div>
+          </div>
+          <div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:59.3%;background:var(--green)"></div></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-align:right;margin:-6px 0 6px">↓ 86.5% conversion</div>
+        <div class="funnel-step">
+          <div class="funnel-labels">
+            <span class="funnel-name">Repeat Purchase (30d)</span>
+            <div class="funnel-nums"><span class="funnel-count">27,120</span><span class="funnel-pct">51.3%</span></div>
+          </div>
+          <div class="funnel-bar-bg"><div class="funnel-bar-fill" style="width:51.3%;background:var(--green)"></div></div>
+        </div>
+        <div style="margin-top:12px; padding:10px; background:var(--surface2); border-radius:6px; font-size:11px; color:var(--muted);">
+          <span style="color:var(--orange); font-weight:600;">⚠ Drop-off alert:</span> KYC → First Txn gap is primary friction point. 24.4% of verified users never transact. Avg time-to-activate = <span style="color:var(--text); font-family:'DM Mono',monospace;">3.2 days</span>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Product Table + Sparklines + Segment Gauges -->
+  <div class="grid-3">
+
+    <!-- Product Performance Table -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Product Performance Breakdown</div>
+          <div class="card-subtitle">GMV, users, ARPU, txn/user — ranked by GMV</div>
+        </div>
+        <div class="tag">product_metrics</div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>GMV</th>
+              <th>Users</th>
+              <th>ARPU</th>
+              <th>Txn/User</th>
+              <th>WoW</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="product-badge"><div class="product-dot" style="background:var(--bnpl)"></div>BNPL</div></td>
+              <td><div class="bar-cell"><div class="mini-bar" style="width:60px;background:var(--bnpl)"></div>$32.1M</div></td>
+              <td style="font-family:'DM Mono',monospace">22,840</td>
+              <td style="font-family:'DM Mono',monospace">$1,406</td>
+              <td style="font-family:'DM Mono',monospace">8.4</td>
+              <td><span class="badge-pos">+4.2%</span></td>
+            </tr>
+            <tr>
+              <td><div class="product-badge"><div class="product-dot" style="background:var(--food)"></div>Food Delivery</div></td>
+              <td><div class="bar-cell"><div class="mini-bar" style="width:36px;background:var(--food)"></div>$19.1M</div></td>
+              <td style="font-family:'DM Mono',monospace">31,220</td>
+              <td style="font-family:'DM Mono',monospace">$612</td>
+              <td style="font-family:'DM Mono',monospace">12.1</td>
+              <td><span class="badge-pos">+8.7%</span></td>
+            </tr>
+            <tr>
+              <td><div class="product-badge"><div class="product-dot" style="background:var(--ride)"></div>Ride Sharing</div></td>
+              <td><div class="bar-cell"><div class="mini-bar" style="width:21px;background:var(--ride)"></div>$10.9M</div></td>
+              <td style="font-family:'DM Mono',monospace">18,560</td>
+              <td style="font-family:'DM Mono',monospace">$587</td>
+              <td style="font-family:'DM Mono',monospace">9.2</td>
+              <td><span class="badge-neg">-2.1%</span></td>
+            </tr>
+            <tr>
+              <td><div class="product-badge"><div class="product-dot" style="background:var(--gaming)"></div>Gaming</div></td>
+              <td><div class="bar-cell"><div class="mini-bar" style="width:12px;background:var(--gaming)"></div>$6.1M</div></td>
+              <td style="font-family:'DM Mono',monospace">14,780</td>
+              <td style="font-family:'DM Mono',monospace">$413</td>
+              <td style="font-family:'DM Mono',monospace">15.8</td>
+              <td><span class="badge-pos">+12.3%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Weekly Sparklines -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Weekly Trend</div>
+          <div class="card-subtitle">12-week rolling KPIs</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="sparkline-row">
+          <div class="spark-item">
+            <span class="spark-label">GMV</span>
+            <svg class="spark-svg" height="28" viewBox="0 0 120 28">
+              <polyline points="0,22 10,20 20,18 30,16 40,14 50,15 60,12 70,10 80,9 90,8 100,7 110,5 120,4" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="120" cy="4" r="3" fill="var(--accent)"/>
+            </svg>
+            <span class="spark-val" style="color:var(--accent)">$1.42M</span>
+          </div>
+          <div class="spark-item">
+            <span class="spark-label">Txns</span>
+            <svg class="spark-svg" height="28" viewBox="0 0 120 28">
+              <polyline points="0,20 10,18 20,16 30,17 40,14 50,13 60,11 70,12 80,10 90,9 100,8 110,7 120,6" fill="none" stroke="var(--green)" stroke-width="2"/>
+              <circle cx="120" cy="6" r="3" fill="var(--green)"/>
+            </svg>
+            <span class="spark-val" style="color:var(--green)">19.3K</span>
+          </div>
+          <div class="spark-item">
+            <span class="spark-label">New Users</span>
+            <svg class="spark-svg" height="28" viewBox="0 0 120 28">
+              <polyline points="0,16 10,14 20,15 30,12 40,14 50,11 60,13 70,10 80,12 90,9 100,10 110,8 120,9" fill="none" stroke="var(--orange)" stroke-width="2"/>
+              <circle cx="120" cy="9" r="3" fill="var(--orange)"/>
+            </svg>
+            <span class="spark-val" style="color:var(--orange)">2.4K</span>
+          </div>
+          <div class="spark-item">
+            <span class="spark-label">Churn Rate</span>
+            <svg class="spark-svg" height="28" viewBox="0 0 120 28">
+              <polyline points="0,10 10,11 20,10 30,12 40,11 50,13 60,12 70,14 80,13 90,14 100,15 110,14 120,16" fill="none" stroke="var(--red)" stroke-width="2"/>
+              <circle cx="120" cy="16" r="3" fill="var(--red)"/>
+            </svg>
+            <span class="spark-val" style="color:var(--red)">6.8%</span>
+          </div>
+          <div class="spark-item">
+            <span class="spark-label">Avg Order</span>
+            <svg class="spark-svg" height="28" viewBox="0 0 120 28">
+              <polyline points="0,18 10,17 20,16 30,15 40,16 50,14 60,13 70,14 80,13 90,12 100,11 110,11 120,10" fill="none" stroke="var(--teal)" stroke-width="2"/>
+              <circle cx="120" cy="10" r="3" fill="var(--teal)"/>
+            </svg>
+            <span class="spark-val" style="color:var(--teal)">$304</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segment Gauges -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Segment Health</div>
+          <div class="card-subtitle">dim_users segments · current period</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Gauge charts as arc SVGs -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="text-align:center;">
+            <svg width="90" height="52" viewBox="0 0 90 52">
+              <path d="M10,46 A35,35 0 0,1 80,46" fill="none" stroke="#1f2535" stroke-width="8" stroke-linecap="round"/>
+              <path d="M10,46 A35,35 0 0,1 80,46" fill="none" stroke="var(--green)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110 110" stroke-dashoffset="28"/>
+              <text x="45" y="44" text-anchor="middle" fill="#e8eaf0" font-size="13" font-weight="600" font-family="DM Mono, monospace">74%</text>
+            </svg>
+            <div style="font-size:10px; color:var(--muted);">Active (30d)</div>
+          </div>
+          <div style="text-align:center;">
+            <svg width="90" height="52" viewBox="0 0 90 52">
+              <path d="M10,46 A35,35 0 0,1 80,46" fill="none" stroke="#1f2535" stroke-width="8" stroke-linecap="round"/>
+              <path d="M10,46 A35,35 0 0,1 80,46" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110 110" stroke-dashoffset="60"/>
+              <text x="45" y="44" text-anchor="middle" fill="#e8eaf0" font-size="13" font-weight="600" font-family="DM Mono, monospace">46%</text>
+            </svg>
+            <div style="font-size:10px; color:var(--muted);">Multi-product</div>
+          </div>
+          <div style="text-align:center;">
+            <svg width="90" height="52" viewBox="0 0 90 52">
+              <path d="M10,46 A35,35 0 0,1 80,46" fill="none" stroke="#1f2535" stroke-width="8" stroke-linecap="round"/>
+              <path d="M10,46 A35,35 0 0,1 80,46" fill="none" stroke="var(--orange)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110 110" stroke-dashoffset="77"/>
+              <text x="45" y="44" text-anchor="middle" fill="#e8eaf0" font-size="13" font-weight="600" font-family="DM Mono, monospace">30%</text>
+            </svg>
+            <div style="font-size:10px; color:var(--muted);">Power Users</div>
+          </div>
+          <div style="text-align:center;">
+            <svg width="90" height="52" viewBox="0 0 90 52">
+              <path d="M10,46 A35,35 0 0,1 80,46" fill="none" stroke="#1f2535" stroke-width="8" stroke-linecap="round"/>
+              <path d="M10,46 A35,35 0 0,1 80,46" fill="none" stroke="var(--red)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110 110" stroke-dashoffset="98"/>
+              <text x="45" y="44" text-anchor="middle" fill="#e8eaf0" font-size="13" font-weight="600" font-family="DM Mono, monospace">11%</text>
+            </svg>
+            <div style="font-size:10px; color:var(--muted);">At-Risk Churn</div>
+          </div>
+        </div>
+        <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:12px;">
+          <div style="font-size:10px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.4px;">Days Since Last Transaction</div>
+          <div style="display:flex; gap:4px; align-items:flex-end; height:40px;">
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;">
+              <div style="background:var(--green); width:100%; border-radius:2px 2px 0 0;" id="b1"></div>
+              <div style="font-size:9px; color:var(--muted);">0-7d</div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;">
+              <div style="background:var(--accent); width:100%; border-radius:2px 2px 0 0;" id="b2"></div>
+              <div style="font-size:9px; color:var(--muted);">8-30d</div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;">
+              <div style="background:var(--orange); width:100%; border-radius:2px 2px 0 0;" id="b3"></div>
+              <div style="font-size:9px; color:var(--muted);">31-60d</div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;">
+              <div style="background:var(--red); width:100%; border-radius:2px 2px 0 0;" id="b4"></div>
+              <div style="font-size:9px; color:var(--muted);">60d+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 5: Retention Line Chart + User Segments Bar -->
+  <div class="grid-2-1">
+
+    <!-- Retention Curves -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Retention Curves by Product</div>
+          <div class="card-subtitle">% of cohort retained at month M+N — 6-month view</div>
+        </div>
+        <div class="card-actions">
+          <div class="legend">
+            <div class="legend-item"><div class="legend-line" style="background:var(--bnpl)"></div>BNPL</div>
+            <div class="legend-item"><div class="legend-line" style="background:var(--food)"></div>Food</div>
+            <div class="legend-item"><div class="legend-line" style="background:var(--ride)"></div>Ride</div>
+            <div class="legend-item"><div class="legend-line" style="background:var(--gaming)"></div>Gaming</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body" style="padding-top:10px">
+        <svg width="100%" height="160" viewBox="0 0 500 160" preserveAspectRatio="none">
+          <line x1="50" y1="20" x2="490" y2="20" class="grid-line"/>
+          <line x1="50" y1="55" x2="490" y2="55" class="grid-line"/>
+          <line x1="50" y1="90" x2="490" y2="90" class="grid-line"/>
+          <line x1="50" y1="125" x2="490" y2="125" class="grid-line"/>
+          <text x="42" y="24" class="axis-text" text-anchor="end">100%</text>
+          <text x="42" y="59" class="axis-text" text-anchor="end">75%</text>
+          <text x="42" y="94" class="axis-text" text-anchor="end">50%</text>
+          <text x="42" y="129" class="axis-text" text-anchor="end">25%</text>
+          <text x="50" y="148" class="axis-text" text-anchor="middle">M+0</text>
+          <text x="136" y="148" class="axis-text" text-anchor="middle">M+1</text>
+          <text x="222" y="148" class="axis-text" text-anchor="middle">M+2</text>
+          <text x="308" y="148" class="axis-text" text-anchor="middle">M+3</text>
+          <text x="394" y="148" class="axis-text" text-anchor="middle">M+4</text>
+          <text x="480" y="148" class="axis-text" text-anchor="middle">M+5</text>
+          <!-- BNPL: 100→68→52→44→40→38 -->
+          <polyline points="50,20 136,54 222,74 308,84 394,90 480,92" fill="none" stroke="var(--bnpl)" stroke-width="2.5"/>
+          <circle cx="50" cy="20" r="3" fill="var(--bnpl)"/>
+          <circle cx="136" cy="54" r="3" fill="var(--bnpl)"/>
+          <circle cx="222" cy="74" r="3" fill="var(--bnpl)"/>
+          <circle cx="308" cy="84" r="3" fill="var(--bnpl)"/>
+          <circle cx="394" cy="90" r="3" fill="var(--bnpl)"/>
+          <circle cx="480" cy="92" r="3" fill="var(--bnpl)"/>
+          <!-- Food: 100→71→58→50→46→44 -->
+          <polyline points="50,20 136,48 222,65 308,77 394,84 480,87" fill="none" stroke="var(--food)" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <!-- Ride: 100→60→44→36→32→29 -->
+          <polyline points="50,20 136,62 222,83 308,96 394,103 480,108" fill="none" stroke="var(--ride)" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <!-- Gaming: 100→52→40→33→30→28 -->
+          <polyline points="50,20 136,68 222,85 308,97 394,103 480,107" fill="none" stroke="var(--gaming)" stroke-width="2.5" stroke-dasharray="2,3"/>
+          <!-- Label at end -->
+          <text x="487" y="95" fill="var(--bnpl)" font-size="10" font-family="DM Mono, monospace">38%</text>
+          <text x="487" y="90" fill="var(--food)" font-size="10" font-family="DM Mono, monospace" dy="4">44%</text>
+        </svg>
+        <div style="padding:10px 0 0; font-size:11px; color:var(--muted)">
+          <span style="color:var(--green)">Food Delivery</span> shows strongest 6-month retention at 44%. BNPL M+1 drop (68%) signals post-first-purchase optimization opportunity.
+        </div>
+      </div>
+    </div>
+
+    <!-- User Segment Waterfall -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">User Segment Mix</div>
+          <div class="card-subtitle">dim_users classification</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; font-size:11.5px;">
+              <span>New (&lt;30d)</span>
+              <span style="font-family:'DM Mono',monospace; color:var(--accent)">9,840 <span style="color:var(--muted); font-size:10px">24%</span></span>
+            </div>
+            <div style="height:6px;background:var(--surface2);border-radius:3px;"><div style="width:24%;height:100%;background:var(--accent);border-radius:3px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; font-size:11.5px;">
+              <span>Active Regular</span>
+              <span style="font-family:'DM Mono',monospace; color:var(--green)">15,220 <span style="color:var(--muted); font-size:10px">37%</span></span>
+            </div>
+            <div style="height:6px;background:var(--surface2);border-radius:3px;"><div style="width:37%;height:100%;background:var(--green);border-radius:3px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; font-size:11.5px;">
+              <span>Power User</span>
+              <span style="font-family:'DM Mono',monospace; color:var(--orange)">8,240 <span style="color:var(--muted); font-size:10px">20%</span></span>
+            </div>
+            <div style="height:6px;background:var(--surface2);border-radius:3px;"><div style="width:20%;height:100%;background:var(--orange);border-radius:3px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; font-size:11.5px;">
+              <span>Dormant (60-90d)</span>
+              <span style="font-family:'DM Mono',monospace; color:var(--muted)">4,500 <span style="color:var(--muted); font-size:10px">11%</span></span>
+            </div>
+            <div style="height:6px;background:var(--surface2);border-radius:3px;"><div style="width:11%;height:100%;background:#374151;border-radius:3px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px; font-size:11.5px;">
+              <span>Churned (90d+)</span>
+              <span style="font-family:'DM Mono',monospace; color:var(--red)">3,400 <span style="color:var(--muted); font-size:10px">8%</span></span>
+            </div>
+            <div style="height:6px;background:var(--surface2);border-radius:3px;"><div style="width:8%;height:100%;background:var(--red);border-radius:3px;"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:16px; padding:10px; background:var(--surface2); border-radius:6px; border-left:2px solid var(--accent);">
+          <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:4px;">Quick Insight</div>
+          <div style="font-size:11.5px; line-height:1.5;">57% of users are New or Active Regular, indicating healthy acquisition. Power Users drive 42% of total GMV despite being 20% of base.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Footer -->
+<div class="footer">
+  <div>SuperApp Customer Lifecycle Analytics · Built with dbt + DuckDB · <span style="color:var(--accent)">19 data quality tests passing</span></div>
+  <div>fct_retention · fct_transactions · fct_activation · dim_users · Last run: 2h ago</div>
+</div>
+
+<script>
+  // ─── Retention Heatmap ───
+  const cohorts = [
+    { label: 'Jan 2023', values: [100, 68, 52, 44, 40, 38, 36] },
+    { label: 'Feb 2023', values: [100, 71, 56, 48, 43, 41, null] },
+    { label: 'Mar 2023', values: [100, 65, 50, 42, 38, null, null] },
+    { label: 'Apr 2023', values: [100, 70, 55, 46, null, null, null] },
+    { label: 'May 2023', values: [100, 73, 58, null, null, null, null] },
+    { label: 'Jun 2023', values: [100, 69, null, null, null, null, null] },
+    { label: 'Jul 2023', values: [100, null, null, null, null, null, null] },
+  ];
+
+  function heatColor(v) {
+    if (v === null) return 'background: var(--surface2); color: var(--border2);';
+    if (v === 100) return `background: rgba(79,142,247,0.9); color: #fff;`;
+    if (v >= 65) return `background: rgba(79,142,247,0.55); color: #fff;`;
+    if (v >= 50) return `background: rgba(79,142,247,0.38); color: #e8eaf0;`;
+    if (v >= 40) return `background: rgba(79,142,247,0.22); color: #9ca3af;`;
+    return `background: rgba(79,142,247,0.10); color: #6b7280;`;
+  }
+
+  const tbody = document.getElementById('heatmap-body');
+  cohorts.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="cohort-label">${c.label}</td>` +
+      c.values.map(v => `<td><div class="cell" style="${heatColor(v)}">${v !== null ? v + '%' : '—'}</div></td>`).join('');
+    tbody.appendChild(tr);
+  });
+
+  // ─── Bar chart heights ───
+  const bars = [
+    { id: 'b1', h: 34, color: 'var(--green)' },
+    { id: 'b2', h: 28, color: 'var(--accent)' },
+    { id: 'b3', h: 16, color: 'var(--orange)' },
+    { id: 'b4', h: 10, color: 'var(--red)' },
+  ];
+  bars.forEach(b => {
+    const el = document.getElementById(b.id);
+    if (el) el.style.height = b.h + 'px';
+  });
+</script>
+</body>
+</html>
